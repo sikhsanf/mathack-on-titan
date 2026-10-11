@@ -1,0 +1,17 @@
+from playwright.sync_api import sync_playwright
+three=open('/home/claude/mathack/node_modules/three/build/three.min.js').read()
+with sync_playwright() as p:
+    b=p.chromium.launch(args=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'])
+    pg=b.new_page(viewport={'width':390,'height':844});errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
+    pg.route('**/three.min.js',lambda r:r.fulfill(body=three,content_type='application/javascript'));pg.route('**/fonts.g*/**',lambda r:r.abort())
+    pg.goto('http://localhost:8765/index.html');pg.wait_for_timeout(1200)
+    pg.click('#b-play');pg.click('.slot.empty >> nth=0');pg.wait_for_timeout(500)
+    pg.fill('#in-name','Z');pg.click('#st-ok');pg.wait_for_timeout(500)
+    pg.click('#b-style');pg.wait_for_timeout(500)
+    pg.click('[data-tab=hat]');pg.wait_for_timeout(300)
+    pg.click('.ccard.lock >> nth=0');pg.wait_for_timeout(600)
+    pg.screenshot(path='shots/try1.png')
+    print(pg.evaluate("[__G.edit.look.hat,!!__G.edit.try]"))
+    pg.click('#st-ok');pg.wait_for_timeout(500)
+    print(pg.evaluate("[__G.slot.look.hat,__G.slot.own.hat.join()]"),errs)
+    b.close()

@@ -104,7 +104,7 @@ function setVisible(mode){
   scene.fog=play&&G.world?new THREE.Fog(STAGES[G.stageIdx].fog,45,130):new THREE.Fog('#cfe3ee',40,100);
 }
 function setMode(m){
-  G.mode=m;setVisible(m);coopPush();
+  G.mode=m;setVisible(m);coopPush();if(m!=='home'){G.bub=null;const pb=document.getElementById('pal-bubble');if(pb)pb.classList.remove('on');}
   if(m==='title'||m==='slots'||m==='home'||m==='edit'||m==='parent'){AU.kind='home';}else if(m==='play')AU.kind='walk';else if(m==='duel')AU.kind='duel';
 }
 
@@ -409,7 +409,7 @@ function pvUpdate(dt,s){
   const k=1-Math.exp(-dt*6),dx=(s.hx||0)-G.hx;G.hx+=dx*k;G.hy=s.hy||0;
   const duel=s.mode==='duel';G.pvDuel=duel;
   const ti=s.tIdx|0;
-  G.titans.forEach((T,i)=>{const gone=T.isMon&&i<ti;T.root.visible=!gone;T.gone=gone;});
+  G.titans.forEach((T,i)=>{const fol=T.isMon&&i<ti;T.follow=fol;T.gone=false;T.root.visible=true;if(fol)T.tame=true;});
   const T=G.titans[ti];
   if(T&&duel){
     if(G.pvHp!==undefined&&s.hp<G.pvHp){T.hit=1;T.flash=1;const p=new THREE.Vector3();foeTarget(T,p);burst(p.x,p.y,p.z,['#e0352f','#ff7a6a','#fff3d0','#5ec24a'],14,4,.7,6,.16);}
@@ -474,7 +474,7 @@ function palTick(dt){
   const b=G.bub,el=$('#pal-bubble');
   if(b){b.t-=dt;
     const p=b.p,h=(p.isMon?p.def.h*p.baseS:6.6*p.baseS+1.2)+.5,v=new THREE.Vector3(p.root.position.x,p.root.position.y+h,p.root.position.z).project(cam);
-    el.style.left=((v.x*.5+.5)*100)+'%';el.style.top=((-v.y*.5+.5)*100)+'%';
+    el.style.left=clamp((v.x*.5+.5)*100,18,82)+'%';el.style.top=((-v.y*.5+.5)*100)+'%';
     if(b.t<=0||G.mode!=='home'){el.classList.remove('on');G.bub=null;}}
 }
 function goHome(){
@@ -517,6 +517,7 @@ function openStyleUI(){
     else{G.slot.look=Object.assign({},ed.orig);rebuildHero(G.slot.look);goHome();}
   };
   $('#st-ok').onclick=()=>{
+    fixLook();
     if(ed.isNew){
       const nm=($('#in-name')&&$('#in-name').value||'').trim();
       if(!nm){toast(t('gNeedName'));return;}
@@ -553,7 +554,7 @@ function renderStyle(keepScroll){
 }
 function gridHTML(){
   const ed=G.edit,S=slotRef(),L=ed.look;let h='';
-  const card=(kind,id,inner,own,price,on)=>'<div class="ccard'+(on?' on':'')+(own?'':' lock')+'" data-k="'+kind+'" data-id="'+id+'">'+inner+(own?'':'<span class="pr">🪙'+price+'</span>')+'</div>';
+  const card=(kind,id,inner,own,price,on)=>'<div class="ccard'+(on?' on':'')+(own?'':' lock')+((!own&&ed.try&&ed.try.kind===kind&&ed.try.id===id)?' try':'')+'" data-k="'+kind+'" data-id="'+id+'">'+inner+(own?'':((ed.try&&ed.try.kind===kind&&ed.try.id===id)?'<span class="buy">'+t('buy')+' 🪙'+price+'</span>':'<span class="pr">🪙'+price+'</span>'))+'</div>';
   const im=(k,i)=>'<img class="th" alt="" src="'+thumb(k,i,L)+'">';
   if(ed.tab==='hair')HSG[L.g?1:0].forEach(i=>{h+=card('hs',i,im('hs',i)+'<span>'+(TX[LANG].hsNames[i]||'')+'</span>',true,0,L.hs===i);});
   else if(ed.tab==='hairc')for(let i=0;i<HAIR_COLORS;i++)h+=card('hair',i,'<div class="sw" style="background:'+HAIR[i]+'"></div>',true,0,L.hair===i);
@@ -563,6 +564,19 @@ function gridHTML(){
   else if(ed.tab==='pet')for(let i=0;i<10;i++)h+=card('pet',i,(i?im('pet',i):'<span class="e">🚫</span>')+'<span>'+(i?nameOf('pet',i):t('none'))+'</span>',S.own.pet.includes(i),PET_PRICE[i]+(i===5?0:0),L.pet===i);
   return h;
 }
+function buyTry(){
+  const ed=G.edit,S=slotRef();if(!ed||!ed.try)return;const {kind,id}=ed.try;
+  const p={outfit:OUTFITS[id]&&OUTFITS[id].price,hat:HAT_PRICE[id],pet:PET_PRICE[id]}[kind];
+  if(kind==='pet'&&id===5&&p===0){toast(TX[LANG].petGift+' ('+STAGES[0].key+')');return;}
+  if(S.coins<p){toast(t('notEnough'));SFX.bad();return;}
+  S.coins-=p;S.own[kind].push(id);SFX.coin();toast(t('bought'),1200);
+  ed.try=null;if(ed.prev)delete ed.prev[kind];if(!ed.isNew)saveDB();renderStyle(true);
+}
+function fixLook(){
+  const ed=G.edit,S=slotRef();if(!ed)return;
+  ['outfit','hat','pet'].forEach(k=>{if(!S.own[k].includes(ed.look[k]))ed.look[k]=(ed.prev&&ed.prev[k]!==undefined&&S.own[k].includes(ed.prev[k]))?ed.prev[k]:0;});
+  ed.try=null;ed.prev={};
+}
 function equip(kind,id){
   const ed=G.edit,S=slotRef();
   const priceOf={outfit:i=>OUTFITS[i].price,hat:i=>HAT_PRICE[i],pet:i=>PET_PRICE[i]};
@@ -571,11 +585,14 @@ function equip(kind,id){
     const own=S.own[ownKey[kind]];
     if(!own.includes(id)){
       const p=priceOf[kind](id);
-      if(kind==='pet'&&id===5&&p===0){toast(TX[LANG].petGift+' ('+STAGES[0].key+')');return;}
-      if(S.coins<p){toast(t('notEnough'));SFX.bad();return;}
-      S.coins-=p;own.push(id);SFX.coin();toast(t('bought'),1200);
+      ed.prev=ed.prev||{};
+      if(!(kind in ed.prev))ed.prev[kind]=ed.look[kind];
+      ed.try={kind,id};ed.look[kind]=id;SFX.pop();toast(t('tryOn'),1200);
+      if(kind==='pet'){G.petId=-2;}
+      rebuildHero(ed.look);camStyle();renderStyle(true);return;
     }
   }
+  if(ed.try&&ed.try.kind===kind)ed.try=null;if(ed.prev)delete ed.prev[kind];
   ed.look[kind]=id;
   if(kind==='pet'){G.petId=-2;}
   rebuildHero(ed.look);camStyle();
@@ -585,6 +602,7 @@ function equip(kind,id){
 $('#st-body').addEventListener('click',e=>{
   if(!G.edit)return;SFX.tap();
   const tab=e.target.closest('[data-tab]');if(tab){G.edit.tab=tab.dataset.tab;renderStyle(false);return;}
+  const by=e.target.closest('.buy');if(by){buyTry();return;}
   const c=e.target.closest('.ccard');if(c){const k=c.dataset.k,id=+c.dataset.id;equip(k,id);return;}
   const sg=e.target.closest('#sg-g button');if(sg){G.edit.look.g=+sg.dataset.v;G.edit.look.hs=G.edit.look.g?2:0;G.edit.look.hat=G.edit.look.hat;rebuildHero(G.edit.look);camStyle();renderStyle(true);return;}
   const sl=e.target.closest('#sg-l button');if(sl){G.edit.tmp.lvl=sl.dataset.v;renderStyle(true);return;}
@@ -974,7 +992,7 @@ function frame(now){
     else if(m==='map'&&G.mapObj){animKid(G.hero,{moving:false,wave:true,atk:-1,hurt:0,cheer:0,faint:false},dt,TT);if(G.petM)petAnim(G.petM,false,TT);G.mapObj.titans.forEach(T=>animTitan(T,dt,TT));G.mapObj.clouds.forEach(c=>{c.g.position.x=c.x0+Math.sin(TT*c.sp)*3;});}
     else if(m==='parent'){const s=COOP.remote&&COOP.remote.state;if(s&&(s.mode==='play'||s.mode==='duel'||s.mode==='result'))pvUpdate(dt,s);else{pvClear();updateIdle(dt);}}
     else if(m==='title'||m==='slots'||m==='home'||m==='edit')updateIdle(dt);
-    if(m==='play'||m==='duel'||m==='result')updateFollowers(dt);
+    if(m==='play'||m==='duel'||m==='result'||m==='parent')updateFollowers(dt);
     G.titans.forEach(T=>animFoe(T,dt,TT));
     if(G.world){G.world.clouds.forEach(c=>{c.g.position.x=c.x0+Math.sin(TT*c.sp)*3;});G.world.pol.forEach(o=>{o.m.position.y=o.y+Math.sin(TT*1.3+o.ph)*.35;o.m.position.x=o.x+Math.sin(TT*.7+o.ph)*.5;});}
     sunFollow(m==='play'||m==='duel'||m==='result'||(m==='parent'&&G.pvOn)?G.hx:0,0);
@@ -1007,7 +1025,7 @@ function frame(now){
   LANG=DB.lang||((navigator.language||'id').toLowerCase().startsWith('id')?'id':'en');
   AU.muted=!!DB.muted;
   initScenes();engInit();applyLang();$('#b-mute').textContent=AU.muted?'🔇':'🔊';$('#b-mute2').textContent=AU.muted?'🔇':'🔊';
-  $('#ver').textContent='prototype v1.3';
+  $('#ver').textContent='prototype v1.3.3';
   addEventListener('resize',()=>{if($('#s-map').classList.contains('show'))openMap();});
   if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
   goTitle();

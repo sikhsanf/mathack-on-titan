@@ -89,11 +89,19 @@ function enWord(s){
 }
 function enDeep(o){
   if(Array.isArray(o)) return o.map(enDeep);
-  if(o && typeof o==='object'){ var r={}; Object.keys(o).forEach(function(k){ r[k]= (k==='label'||k==='nama') ? enWord(o[k]) : enDeep(o[k]); }); return r; }
+  if(o && typeof o==='object'){ var r={}; Object.keys(o).forEach(function(k){ r[k]= (k==='label'||k==='nama') ? enWord(o[k]) : (k==='orderItems'||k==='correctOrder') ? o[k].map(enWord) : (k==='jawaban' && typeof o[k]==='string') ? o[k].split(', ').map(enWord).join(', ') : enDeep(o[k]); }); return r; }
   return o;
+}
+function fixItem(hal,item){
+  if(hal.level==='prak' && hal.no===13){
+    var m=/Total=(\d+),\s*Kubus=(\d+)/.exec(item.nilai||'');
+    if(m){ var tot=+m[1], cu=+m[2]; return Object.assign({},item,{prompt:'',visual:{type:'groupIcons',groups:[{emoji:'\ud83e\uddca',count:cu,label:'Kubus'},{emoji:'\u26bd',count:tot-cu,label:'Bola'}]}}); }
+  }
+  return item;
 }
 function localizeItem(hal,item){
   var lang=(state.activeProfile && state.activeProfile.lang) || 'id';
+  item=fixItem(hal,item);
   if(lang==='en' && hal.level==='prak') return enDeep(item);
   return item;
 }
@@ -212,6 +220,7 @@ assert t.count('\nrunSplash();\n') == 1
 i0 = t.index('function localizeHal(hal){'); i1 = t.index('\n}\n', i0)+3
 t = t[:i0] + LOCFIX + t[i1:]
 t = t.replace("const item = hal.items[state.stagePlay.itemIdx];\n\n  document.getElementById('pageTopic')", "const item = localizeItem(hal, hal.items[state.stagePlay.itemIdx]);\n\n  document.getElementById('pageTopic')",1)
+t = t.replace("const px = Math.round(38 + (Math.min(s.value,20)/maxVal)*90);","const px = Math.round(28 + (Math.min(s.value,20)/maxVal)*52);",1)
 t = t.replace('family=Baloo+2:','family=Patrick+Hand&family=Baloo+2:',1)
 t = t.replace('function mechGenChoice(hal, item, area){','function mechGenChoice0(hal, item, area){',1)
 t = t.replace("if(opts.onTap) opts.onTap();\n    }", "if(opts.onTap) opts.onTap(); else if(opts.dropTargets && opts.dropTargets.length === 1 && opts.onDrop) opts.onDrop(opts.dropTargets[0]);\n    }",1)

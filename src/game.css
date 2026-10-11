@@ -299,3 +299,6 @@ input.code{text-transform:uppercase;letter-spacing:.3em;text-align:center;font:8
 .gwho button{flex:1;pointer-events:auto;border:3px solid var(--ink);border-radius:16px;background:#fff;padding:10px 6px;font:800 clamp(16px,4vmin,22px) var(--f-display);color:var(--ink);box-shadow:0 3px 0 var(--ink)}
 .gwho button.on{background:#ffe45a;transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
 .gwho button:disabled{opacity:.4;box-shadow:none}
+
+.ccard.try{background:#fff6cf;border-color:#f0a020;box-shadow:0 0 0 3px #f0a020}
+.ccard .buy{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);background:var(--leaf);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:3px 10px;font:800 13px var(--f-display);white-space:nowrap}
