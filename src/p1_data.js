@@ -125,23 +125,40 @@ const SFX={
  win(){const c=aCtx();if(!c)return;const n=c.currentTime;[523,659,784,659,784,1047,1319].forEach((f,i)=>tone(f,n+i*.1,.28,'triangle',.13));},
  pop(){const c=aCtx();if(!c)return;tone(700,c.currentTime,.12,'sine',.1,1400);}
 };
-const BGM={
- walk:{bpm:112,ch:[[261,329,392],[220,277,329],[174,220,261],[196,247,293]],mel:[0,2,4,2,5,4,2,0],sc:[523,587,659,784,880,1047]},
- duel:{bpm:132,ch:[[220,261,329],[196,247,293],[174,220,261],[196,247,293]],mel:[0,1,2,4,2,1,4,3],sc:[440,523,587,659,784,880]},
- home:{bpm:96,ch:[[261,329,392],[196,247,293],[220,277,329],[174,220,261]],mel:[2,4,5,4,2,0,2,-1],sc:[523,587,659,784,880,1047]}
+const NF=n=>440*Math.pow(2,(n-69)/12);
+const SONGS={
+ home:{bpm:92,drums:0,lead:.05,chords:[[48,55,64],[45,52,60],[41,48,57],[43,50,59]],bass:[36,33,29,31],
+  mel:[[76,0,79,0,76,74,72,0],[72,0,76,0,74,72,69,0],[69,0,72,0,77,76,72,0],[74,0,71,0,74,76,79,0]]},
+ walk:{bpm:120,drums:1,lead:.055,chords:[[48,55,64],[45,52,60],[41,48,57],[43,50,59]],bass:[36,33,29,31],
+  mel:[[76,72,76,79,76,72,67,72],[76,72,76,81,76,72,69,72],[77,72,77,81,77,72,69,72],[79,74,79,83,79,74,71,74]]},
+ duel:{bpm:132,drums:2,lead:.05,chords:[[45,52,60],[41,48,57],[48,55,64],[43,50,59]],bass:[33,29,36,31],
+  mel:[[81,0,76,81,84,81,76,0],[77,0,72,77,81,77,72,0],[79,0,72,76,79,76,72,0],[79,0,74,79,83,79,74,71]]}
 };
-function bgmTick(){
-  const c=aCtx();if(!c||!AU.bgmOn||AU.muted)return;const B=BGM[AU.kind]||BGM.walk,spb=60/B.bpm/2,now=c.currentTime;
-  const st=AU.step++,bar=(st>>3)&3,beat=st&7;
-  if(beat===0||beat===4)B.ch[bar].forEach((f,i)=>tone(f/2,now+.02,spb*3.6,'triangle',.022));
-  if(beat%2===0&&AU.kind!=='home')tone(B.ch[bar][0]/4,now,spb*.9,'sine',.05);
-  const m=B.mel[beat];if(m>=0&&(beat%2===0||Math.random()<.5))tone(B.sc[(m+bar)%B.sc.length],now,spb*1.6,'sine',.03);
+function bgmNote(f,t0,d,type,g){const c=aCtx();if(!c)return;const o=c.createOscillator(),v=c.createGain();o.type=type;o.frequency.value=f;v.gain.setValueAtTime(.0001,t0);v.gain.exponentialRampToValueAtTime(g,t0+.02);v.gain.exponentialRampToValueAtTime(.0001,t0+d);o.connect(v);v.connect(AU.bgm);o.start(t0);o.stop(t0+d+.05);}
+function bgmHat(t0,g){const c=aCtx();if(!c)return;const n=c.sampleRate*.04|0,b=c.createBuffer(1,n,c.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=c.createBufferSource(),f=c.createBiquadFilter(),v=c.createGain();s.buffer=b;f.type='highpass';f.frequency.value=6000;v.gain.value=g;s.connect(f);f.connect(v);v.connect(AU.bgm);s.start(t0);}
+function bgmKick(t0,g){const c=aCtx();if(!c)return;const o=c.createOscillator(),v=c.createGain();o.frequency.setValueAtTime(140,t0);o.frequency.exponentialRampToValueAtTime(45,t0+.14);v.gain.setValueAtTime(g,t0);v.gain.exponentialRampToValueAtTime(.0001,t0+.2);o.connect(v);v.connect(AU.bgm);o.start(t0);o.stop(t0+.25);}
+function bgmStep(S,step,t0){
+  const spb=60/S.bpm/2,bar=(step>>3)&3,beat=step&7,ch=S.chords[bar];
+  if(beat===0)ch.forEach(n=>bgmNote(NF(n),t0,spb*7.5,'sine',.028));
+  if(beat%4===0)bgmNote(NF(S.bass[bar]),t0,spb*3.6,'triangle',.11);
+  else if(S.drums&&beat%2===0)bgmNote(NF(S.bass[bar]+12),t0,spb*1.4,'triangle',.05);
+  const m=S.mel[bar][beat];if(m){bgmNote(NF(m),t0,spb*1.7,'triangle',S.lead);bgmNote(NF(m+12),t0,spb*1.2,'sine',S.lead*.35);}
+  if(S.drums){if(beat%4===0)bgmKick(t0,.16);if(beat%2===1)bgmHat(t0,S.drums===2?.05:.03);if(S.drums===2&&beat===4)bgmHat(t0,.07);}
 }
 function bgmStart(kind){
-  AU.kind=kind||AU.kind;if(AU.bgmOn)return;AU.bgmOn=true;AU.step=0;
-  const run=()=>{if(!AU.bgmOn)return;bgmTick();const B=BGM[AU.kind]||BGM.walk;AU.timer=setTimeout(run,60000/B.bpm/2*1000);};run();
+  AU.kind=kind||AU.kind;const c=aCtx();if(!c)return;
+  if(!AU.bgm){AU.bgm=c.createGain();AU.bgm.gain.value=.9;AU.bgm.connect(AU.master);}
+  if(AU.bgmOn)return;AU.bgmOn=true;AU.step=0;AU.next=c.currentTime+.1;
+  clearInterval(AU.timer);
+  AU.timer=setInterval(()=>{
+    const c2=aCtx();if(!c2||!AU.bgmOn)return;
+    const S=SONGS[AU.kind]||SONGS.walk,spb=60/S.bpm/2;
+    if(AU.next<c2.currentTime-.5)AU.next=c2.currentTime+.05;
+    while(AU.next<c2.currentTime+.25){if(!AU.muted)bgmStep(S,AU.step,AU.next);AU.step=(AU.step+1)&31;AU.next+=spb;}
+  },60);
 }
-function bgmStop(){AU.bgmOn=false;clearTimeout(AU.timer);}
+function bgmStop(){AU.bgmOn=false;clearInterval(AU.timer);}
+document.addEventListener('visibilitychange',()=>{const c=AU.ctx;if(!c)return;if(document.hidden)c.suspend&&c.suspend();else c.resume&&c.resume();});
 function setMuted(v){AU.muted=v;if(AU.master)AU.master.gain.value=v?0:1;const b=$('#b-mute');if(b)b.textContent=v?'🔇':'🔊';DB.muted=v;saveDB();}
 
 /* ---------- save (localStorage, in-memory fallback) ---------- */

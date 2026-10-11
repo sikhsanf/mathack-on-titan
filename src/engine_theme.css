@@ -1,44 +1,55 @@
-html.embed{--ink:#2b2350;--good:#3fbf6e;--good-dark:#2a9a52;--bad:#ff5d8f;--gold:#ffc83a;--k:#46a6ff;--k-dark:#2a86e0;--purple:#8f6bff;--shadow:0 3px 0 rgba(43,35,80,.16)}
-.embed body{font-family:'Nunito','Baloo 2',system-ui,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none}
-.embed .page-card{padding:4px 8px 10px !important}
-.embed .page-instr{display:block;width:fit-content;max-width:96%;margin:2px auto 4px !important;background:#fff;border:3px solid var(--ink);border-radius:18px;padding:5px 14px;box-shadow:0 3px 0 var(--ink);font:800 clamp(.92rem,3.7vw,1.12rem)/1.2 'Baloo 2','Nunito',sans-serif !important;color:var(--ink)}
-.embed .stage-area{gap:8px !important;margin-top:4px !important}
-/* chunky game buttons */
-.embed .np-key,.embed .choice-pill,.embed .bubble,.embed .pill-btn,.embed .nl-chip,.embed .order-tile,.embed .choice-chip{border:3px solid var(--ink) !important;box-shadow:0 4px 0 var(--ink) !important;background:#fff !important;color:var(--ink) !important;border-radius:16px !important;font-family:'Baloo 2','Nunito',sans-serif !important;font-weight:800 !important;transition:transform .08s,box-shadow .08s}
-.embed .np-key:active,.embed .choice-pill:active,.embed .bubble:active,.embed .pill-btn:active,.embed .nl-chip:active,.embed .order-tile:active{transform:translateY(3px) !important;box-shadow:0 1px 0 var(--ink) !important}
-.embed .pill-btn.primary,.embed .np-key.enter{background:var(--good) !important;color:#fff !important}
-.embed .pill-btn.ghost{background:#fff6e4 !important}
-.embed .np-key.wide{background:#ffd0da !important;color:var(--bad) !important}
-.embed .choice-pill.right,.embed .bubble.right{background:var(--good) !important;color:#fff !important}
-.embed .choice-pill.wrong,.embed .bubble.wrong{background:var(--bad) !important;color:#fff !important}
-.embed .pill-btn{padding:10px 22px !important;font-size:1.05rem !important}
-/* tiles: soft, no outline */
-.embed .tf-cell,.embed .tally-box,.embed .gen-prompt,.embed .bundle-box,.embed .scene-nestbox{border:0 !important;background:#fff !important;box-shadow:0 4px 0 rgba(43,35,80,.14) !important;border-radius:18px !important}
-.embed .gen-prompt{font:800 1rem/1.3 'Baloo 2',sans-serif;text-align:center;padding:10px 16px !important}
-.embed .tf-cell.filled{background:#dff6e8 !important}
-.embed .tf-cell.tapped{box-shadow:inset 0 0 0 4px var(--k),0 4px 0 rgba(43,35,80,.14) !important}
-/* empty slots -> soft "holes" instead of dashed outlines */
-.embed .hole{border:0 !important;background:rgba(43,35,80,.09) !important;box-shadow:inset 0 3px 0 rgba(43,35,80,.12) !important}
-.embed .hole.dragover{background:rgba(70,166,255,.28) !important}
-.embed .numpad-display{border:0 !important;background:#fff !important;box-shadow:inset 0 3px 0 rgba(43,35,80,.14),0 3px 0 rgba(43,35,80,.1) !important;border-radius:16px !important;font:800 1.7rem 'Baloo 2',sans-serif;color:var(--ink);min-width:110px !important;min-height:46px !important;padding:2px 14px !important}
-.embed .numpad-wrap{gap:6px !important}
-.embed .numpad-wrap>div:first-child{font:800 .8rem 'Baloo 2',sans-serif !important;color:var(--ink) !important;opacity:.7}
-/* compact numpad: two rows */
-.embed .numpad-grid{grid-template-columns:repeat(6,clamp(40px,12.5vw,54px)) !important;gap:6px !important}
-.embed .np-key{width:auto !important;height:clamp(40px,12vw,50px) !important;font-size:1.25rem !important;padding:0 !important;border-radius:14px !important;box-shadow:0 3px 0 var(--ink) !important}
+/* ===== PAPER theme: the question panel is a school notebook page ===== */
+html.embed{--pen:#2f3a73;--pencil:#58608a;--blue:#2457c5;--crayon:#ffe27a;--good:#2e9e5b;--bad:#e5484d;--ink:#2f3a73;--k:#2457c5;--k-dark:#1c449c;--gold:#ffc83a;--purple:#7b5bd6;--shadow:none;--wob:255px 16px 225px 16px/16px 225px 16px 255px}
+.embed body{font-family:'Patrick Hand','Baloo 2','Comic Sans MS',cursive,sans-serif;color:var(--pen);-webkit-user-select:none;user-select:none;font-size:18px}
+.embed .page-card{padding:2px 8px 10px !important}
+.embed .page-instr{display:block;width:fit-content;max-width:96%;margin:0 auto 4px !important;background:linear-gradient(transparent 58%,rgba(255,226,122,.9) 58% 90%,transparent 90%);border:0;box-shadow:none;padding:0 8px;font:400 clamp(1.2rem,5.2vw,1.5rem)/1.2 'Patrick Hand','Baloo 2',cursive !important;color:var(--pen);text-align:center}
+.embed .stage-area{gap:8px !important;margin-top:2px !important}
+.embed .item-visual-emoji,.embed .eq-sentence{font-family:'Patrick Hand','Baloo 2',cursive}
+/* paper cut-out keys & choices */
+.embed .np-key,.embed .choice-pill,.embed .bubble,.embed .pill-btn,.embed .nl-chip,.embed .order-tile,.embed .choice-chip,.embed .bond-tile{border:2.5px solid var(--pencil) !important;border-radius:var(--wob) !important;background:#fff !important;box-shadow:2px 3px 0 rgba(47,58,115,.22) !important;color:var(--pen) !important;font-family:'Patrick Hand','Baloo 2',cursive !important;font-weight:400 !important;transition:transform .08s,background .08s}
+.embed .np-key:active,.embed .choice-pill:active,.embed .bubble:active,.embed .pill-btn:active,.embed .nl-chip:active,.embed .order-tile:active,.embed .bond-tile:active{transform:scale(.95) rotate(-1.5deg) !important;background:var(--crayon) !important;box-shadow:1px 1px 0 rgba(47,58,115,.2) !important}
+.embed .bubble,.embed .nl-chip{border-radius:50% 46% 52% 48%/48% 52% 46% 50% !important}
+.embed .pill-btn{padding:6px 22px !important;font-size:1.35rem !important}
+.embed .pill-btn.primary,.embed .np-key.enter{background:#c4f0d3 !important;border-color:var(--good) !important;color:#1c6b3d !important}
+.embed .pill-btn.ghost{background:#fff7d6 !important}
+.embed .np-key.wide{background:#ffdadc !important;color:var(--bad) !important}
+.embed .choice-pill{font-size:1.35rem !important}
+.embed .choice-pill.right,.embed .bubble.right{background:#c4f0d3 !important;border-color:var(--good) !important}
+.embed .choice-pill.wrong,.embed .bubble.wrong{background:#ffc9cc !important;border-color:var(--bad) !important}
+/* printed boxes on the page: thin pencil lines */
+.embed .tf-cell,.embed .tally-box,.embed .bundle-box,.embed .scene-nestbox{border:2px solid rgba(88,96,138,.7) !important;border-radius:var(--wob) !important;background:rgba(255,255,255,.75) !important;box-shadow:none !important}
+.embed .tf-cell.filled{background:#e3f6e9 !important}
+.embed .tf-cell.tapped{background:var(--crayon) !important}
+.embed .gen-prompt{border:0 !important;background:none !important;box-shadow:none !important;font:400 1.5rem/1.25 'Patrick Hand',cursive;text-align:center;padding:4px 8px !important;color:var(--pen)}
+/* answer slots: drawn in pencil */
+.embed .hole{border:2.5px solid var(--pencil) !important;border-radius:var(--wob) !important;background:rgba(255,255,255,.55) !important;box-shadow:none !important}
+.embed .hole.dragover{background:var(--crayon) !important}
+.embed .bond-whole{background:var(--crayon) !important;border:2.5px solid var(--pencil) !important;color:var(--pen) !important;box-shadow:none !important;font-family:'Patrick Hand',cursive !important;font-weight:400 !important;font-size:2rem !important}
+.embed .bond-part,.embed .bond-circle{border:2.5px solid var(--pencil) !important;background:#fff !important;color:var(--blue) !important;box-shadow:none !important;font-family:'Patrick Hand',cursive !important;font-weight:400 !important;font-size:1.9rem !important}
+.embed .bond-part.filled{background:#c4f0d3 !important;border-color:var(--good) !important}
+.embed .bond-lines,.embed .bond-lines::before,.embed .bond-lines::after{border-color:var(--pencil) !important;background-color:var(--pencil) !important}
+.embed .bond-tile{font-size:1.8rem !important;border-radius:50% 46% 52% 48%/48% 52% 46% 50% !important}
+/* numpad display = a blank line you write on, in pen */
+.embed .numpad-display{border:0 !important;border-bottom:3px solid var(--pencil) !important;border-radius:0 !important;background:transparent !important;box-shadow:none !important;font:400 2.3rem 'Patrick Hand',cursive !important;color:var(--blue) !important;min-width:110px !important;min-height:44px !important;padding:0 12px !important}
+.embed .numpad-wrap{gap:4px !important}
+.embed .numpad-wrap>div:first-child{font:400 1.05rem 'Patrick Hand',cursive !important;color:var(--pencil) !important}
+.embed .numpad-grid{grid-template-columns:repeat(6,clamp(40px,12.5vw,54px)) !important;gap:7px !important}
+.embed .np-key{width:auto !important;height:clamp(40px,12vw,50px) !important;font-size:1.6rem !important;padding:0 !important}
 .embed .np-key[data-k="6"]{order:7}.embed .np-key[data-k="7"]{order:8}.embed .np-key[data-k="8"]{order:9}.embed .np-key[data-k="9"]{order:10}.embed .np-key[data-k="0"]{order:11}
 .embed .np-key[data-k="back"]{order:6}
 .embed .numpad-grid>div{display:none}
-.embed .tally-row{gap:12px !important}.embed .tally-box{padding:6px 14px !important;min-width:90px !important}
-.embed .tally-box .tval{font-family:'Baloo 2',sans-serif;color:var(--ink) !important}
-.embed .bond-circle{border-width:3px !important;border-color:var(--ink) !important;box-shadow:0 3px 0 rgba(43,35,80,.2)}
+.embed .tally-row{gap:12px !important}.embed .tally-box{padding:4px 14px !important;min-width:90px !important}
+.embed .tally-box .tlabel{font:400 1rem 'Patrick Hand',cursive !important;color:var(--pencil) !important}
+.embed .tally-box .tval{font:400 2rem 'Patrick Hand',cursive !important;color:var(--blue) !important}
+.embed .loose-pile,.embed .loose-holder{font-family:'Patrick Hand',cursive}
+.embed [style*="color:var(--ink-soft)"],.embed .hint{font-family:'Patrick Hand',cursive;font-size:1.05rem !important;color:var(--pencil) !important}
+/* pairing */
 .embed .pairw{position:relative;display:flex;flex-direction:column;align-items:center;gap:46px;padding:6px 0 4px;touch-action:manipulation}
 .embed .pairw .prow{display:flex;gap:12px;justify-content:center;position:relative;z-index:2}
-.embed .pairw .pi{width:clamp(46px,13vw,60px);height:clamp(46px,13vw,60px);border-radius:16px;background:#fff;box-shadow:0 4px 0 rgba(43,35,80,.18);display:grid;place-items:center;font-size:clamp(28px,8vw,38px);cursor:pointer;transition:transform .1s}
-.embed .pairw .pi.sel{transform:translateY(-4px) scale(1.08);box-shadow:0 0 0 4px var(--gold),0 4px 0 rgba(43,35,80,.18)}
-.embed .pairw .pi.done{background:#dff6e8}
+.embed .pairw .pi{width:clamp(46px,13vw,60px);height:clamp(46px,13vw,60px);border-radius:var(--wob);background:rgba(255,255,255,.8);border:2px solid rgba(88,96,138,.6);display:grid;place-items:center;font-size:clamp(28px,8vw,38px);cursor:pointer;transition:transform .1s}
+.embed .pairw .pi.sel{transform:translateY(-4px) scale(1.08);background:var(--crayon)}
+.embed .pairw .pi.done{background:#e3f6e9}
 .embed .pairw svg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:visible}
-.embed .pairw svg line{stroke:var(--ink);stroke-width:4;stroke-linecap:round;stroke-dasharray:200;stroke-dashoffset:200;animation:pdraw .25s forwards}
+.embed .pairw svg line{stroke:var(--blue);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:200;stroke-dashoffset:200;animation:pdraw .25s forwards}
 @keyframes pdraw{to{stroke-dashoffset:0}}
-.embed .pairhint{font:800 .85rem 'Baloo 2',sans-serif;opacity:.65}
-.embed .icon-img-el,.embed .unit-icon{filter:drop-shadow(0 3px 0 rgba(43,35,80,.18))}
+.embed .pairhint{font:400 1.05rem 'Patrick Hand',cursive;color:var(--pencil)}

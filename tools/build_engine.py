@@ -117,6 +117,7 @@ BRIDGE = r"""
 })();
 """
 assert t.count('\nrunSplash();\n') == 1
+t = t.replace('family=Baloo+2:','family=Patrick+Hand&family=Baloo+2:',1)
 t = t.replace('function mechGenChoice(hal, item, area){','function mechGenChoice0(hal, item, area){',1)
 t = t.replace("if(opts.onTap) opts.onTap();\n    }", "if(opts.onTap) opts.onTap(); else if(opts.dropTargets && opts.dropTargets.length === 1 && opts.onDrop) opts.onDrop(opts.dropTargets[0]);\n    }",1)
 t = t.replace('\nrunSplash();\n', BRIDGE + '\n')

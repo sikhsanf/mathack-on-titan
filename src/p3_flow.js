@@ -269,7 +269,10 @@ function renderMap(){
   STAGES.forEach((st,i)=>{
     const open=stageOpen(i),done=G.slot.prog.done.includes(st.id),n=G.slot.prog.stars[st.id]||0;
     const d=document.createElement('div');d.className='node'+(open?'':' lock')+(done?' done':'');
-    d.innerHTML='<div class="disc">'+(open?(done?'✓':(i+1)):'🔒')+'</div><div class="lbl"></div><div class="st">'+[1,2,3].map(k=>k<=n?'⭐':'☆').join('')+'</div>';
+    const STAR=k=>'<svg class="'+(k<=n?'on':'off')+'" viewBox="0 0 24 24"><path d="M12 2.2l2.9 6.2 6.7.8-5 4.6 1.4 6.7L12 17.1 6 20.5l1.4-6.7-5-4.6 6.7-.8z"/></svg>';
+    const LOCK='<svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="#fff"/><path d="M8 10.5V8a4 4 0 018 0v2.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="15.5" r="1.6" fill="#8d88b0"/></svg>';
+    const CHK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.6 4.6L19 7.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    d.innerHTML='<div class="disc">'+(open?(done?CHK:(i+1)):LOCK)+'</div><div class="lbl"></div><div class="st">'+[1,2,3].map(STAR).join('')+'</div>';
     d.querySelector('.lbl').textContent=t(st.key);
     d.onclick=()=>{if(!open){toast(t('locked'));SFX.bad();return;}SFX.tap();startStage(i);};
     p.appendChild(d);
@@ -588,6 +591,6 @@ function frame(now){
   goTitle();
   requestAnimationFrame(frame);
   setTimeout(()=>{const l=$('#loading');l.style.opacity=0;setTimeout(()=>l.style.display='none',450);},500);
-  const first=()=>{aResume();bgmStart('home');removeEventListener('pointerdown',first);};addEventListener('pointerdown',first);
+  const first=()=>{aResume();bgmStart(AU.kind);};['pointerdown','touchstart','keydown'].forEach(e=>addEventListener(e,first,{passive:true}));
   window.__G=G;
 })();
