@@ -794,7 +794,7 @@ html.embed{--pen:#2f3a73;--pencil:#58608a;--blue:#2457c5;--crayon:#ffe27a;--good
 .embed body{font-family:'Patrick Hand','Baloo 2','Comic Sans MS',cursive,sans-serif;color:var(--pen);-webkit-user-select:none;user-select:none;font-size:18px}
 .embed .page-card{padding:26px 8px 12px !important}
 .embed .page-instr .hl{background:linear-gradient(transparent 58%,rgba(255,226,122,.9) 58% 90%,transparent 90%);-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:0 6px}
-.embed .page-instr{display:block;width:auto;max-width:96%;margin:0 auto 10px !important;background:none;border:0;box-shadow:none;padding:0 8px;font:400 clamp(1.2rem,5.2vw,1.5rem)/1.2 'Patrick Hand','Baloo 2',cursive !important;color:var(--pen);text-align:center}
+.embed .page-instr{display:block;width:auto;max-width:96%;margin:0 auto 10px !important;background:none;border:0;box-shadow:none;padding:0 8px;font:400 clamp(1.5rem,6.6vw,1.95rem)/1.2 'Patrick Hand','Baloo 2',cursive !important;color:var(--pen);text-align:center}
 .embed .stage-area{gap:12px !important;margin-top:6px !important}
 .embed .item-visual-emoji,.embed .eq-sentence{font-family:'Patrick Hand','Baloo 2',cursive}
 /* paper cut-out keys & choices */
@@ -862,6 +862,13 @@ html.embed{--ic:clamp(1.5rem,min(6.2vw,4.6vh),2.4rem)}
 .embed .plus-sign{font-size:calc(var(--ic)*.9)}
 .embed .bundle-box{display:block !important;text-align:center;word-break:break-all;overflow-wrap:anywhere;padding-top:16px !important;width:calc(var(--ic)*1.25*5 + 30px) !important}
 .embed .loose-holder{width:calc(var(--ic)*1.25*5 + 30px) !important}
+
+.embed .number-line:has(.hop-token){display:grid !important;grid-template-columns:repeat(7,1fr);column-gap:6px;row-gap:38px;width:min(100%,440px);max-width:none;margin-top:34px !important}
+.embed .number-line:has(.hop-token) .nl-chip{min-width:0;width:100%;height:clamp(40px,10vw,52px);font-size:1.3rem}
+.embed .hop-token{font-size:2rem !important;z-index:3;pointer-events:none}
+.embed .pill-btn{font-size:1.5rem !important}
+.embed .np-key{font-size:1.5rem !important}
+.embed .qtype-badge{font-size:1.2rem !important}
 </style>
 </head>
 <body>
@@ -1693,7 +1700,7 @@ function localizeItem(hal,item){
   if(lang==='en' && hal.level==='prak') return enDeep(item);
   return item;
 }
-function localizeHal(hal){
+function localizeHal0(hal){
   const lang = (state.activeProfile && state.activeProfile.lang) || 'id';
   if(lang !== 'en'){
     if(hal.level === 'prak'){ var strip=function(s){ return typeof s==='string' ? s.replace(/\s*\(fokus mengenal angka \d+\)/i,'') : s; }; return Object.assign({}, hal, {instruksi: strip(hal.instruksi), instruksiLayar: strip(hal.instruksiLayar)}); }
@@ -1706,6 +1713,13 @@ function localizeHal(hal){
     return Object.assign({}, hal, {instruksi: EN_PRAK_INSTR[hal.no], instruksiLayar: EN_PRAK_INSTR[hal.no]});
   }
   return hal;
+}
+const SIMPLE_I18N = {"id": {"prak": {"1": "Hitung balok sesuai warna, lalu ketik jumlahnya.", "2": "Hitung gambar, lalu pilih angkanya.", "3": "Hitung gambar, lalu ketik angkanya.", "4": "Hubungkan kelinci ke wortel. Sama banyak? Pilih YA atau TIDAK.", "5": "Hubungkan kelinci ke wortel. Sama banyak? Pilih YA atau TIDAK.", "6": "Hitung hewan di tiap kotak, lalu ketik angkanya.", "7": "Hitung gambar, lalu ketik angkanya.", "8": "Hitung gambar, lalu ketik angkanya.", "9": "Hitung buah di tiap kotak, lalu ketik angkanya.", "10": "Lihat sekilas, lalu ketik angkanya!", "11": "Warna balok ini cocok? Pilih YA atau TIDAK.", "12": "Hitung balok berwarna di tiap kotak.", "13": "Hitung balok yang BUKAN kubus.", "14": "Pilih balok PANJANG atau PENDEK.", "15": "Pilih balok BESAR atau KECIL.", "16": "Pilih kelompok yang LEBIH BANYAK atau LEBIH SEDIKIT.", "17": "Pilih menara yang TINGGI atau PENDEK.", "18": "Hitung KUBUS di tiap kotak.", "19": "Hitung BALOK PANJANG di tiap kotak.", "20": "Hitung TABUNG di tiap kotak.", "21": "Hitung balok bentuk yang diminta, lalu ketik jumlahnya.", "22": "Lihat pola warna. Warna apa berikutnya?", "23": "Lihat pola bentuk. Bentuk apa berikutnya?", "24": "Lihat pola warna. Warna apa berikutnya?", "25": "Pilih benda di ATAS atau BAWAH.", "26": "Pilih benda di DALAM atau LUAR.", "27": "Pilih benda di DEPAN atau BELAKANG.", "28": "Dua susunan ini sama persis? Pilih YA atau TIDAK.", "29": "Urutkan dari yang paling KECIL ke paling BESAR.", "30": "Hitung mundur, lalu lengkapi angkanya."}, "k": {"1": "Hitung kotak yang terisi dan yang kosong.", "2": "Lihat sekilas, lalu ketik angkanya.", "3": "Hitung 10 dan satuannya, lalu ketik angkanya.", "4": "Hitung 10 dan satuannya, lalu ketik angkanya.", "5": "Ketik puluhan, satuan, dan angkanya.", "6": "Isi nomor rumah yang hilang.", "7": "Ikuti lompatan kelinci. Mendarat di angka berapa?", "15": "Lengkapi bagian yang hilang. Dua soal terakhir tanpa gambar.", "17": "Lengkapi bagian yang hilang. Dua soal terakhir tanpa gambar.", "18": "Cari bagian yang hilang.", "19": "Kelompokkan balok menurut ukuran, lalu lengkapi.", "20": "Lengkapi bagian yang hilang.", "21": "Lengkapi bagian yang hilang dan kalimatnya.", "22": "Ikuti lompatan tupai. Berapa jumlahnya?", "23": "Hitung titik kiri dan kanan, lalu isi kalimatnya.", "24": "Hitung pensil kiri dan kanan, lalu isi kalimatnya.", "25": "Hitung koin kiri dan kanan, lalu isi kalimatnya.", "26": "Buat angka pertama jadi 10 dulu, lalu hitung.", "27": "Hitung jumlahnya, lalu ketik jawabannya.", "28": "Coret gambar yang pergi. Sisa berapa?", "29": "Hitung mundur sebanyak langkahnya.", "30": "Warnai pensil. Sisa berapa untuk warna kedua?", "8": "Hitung gambar kue. Lengkapi bagian yang hilang.", "9": "Hitung gambar apel. Lengkapi bagian yang hilang.", "10": "Hitung gambar bintang. Lengkapi bagian yang hilang.", "11": "Hitung gambar ikan. Lengkapi bagian yang hilang.", "12": "Hitung gambar kupu-kupu. Lengkapi bagian yang hilang.", "13": "Hitung gambar kepik. Lengkapi bagian yang hilang.", "14": "Hitung gambar kerang. Lengkapi bagian yang hilang.", "16": "Hitung gambar balon. Lengkapi bagian yang hilang."}}, "en": {"prak": {"1": "Count the blocks of that color, then type the number.", "2": "Count the pictures, then pick the number.", "3": "Count the pictures, then type the number.", "4": "Match each bunny to a carrot. Same amount? Pick YES or NO.", "5": "Match each bunny to a carrot. Same amount? Pick YES or NO.", "6": "Count the animals in each box, then type the number.", "7": "Count the pictures, then type the number.", "8": "Count the pictures, then type the number.", "9": "Count the fruit in each box, then type the number.", "10": "Take a quick look, then type the number!", "11": "Is this the right color? Pick YES or NO.", "12": "Count the colored blocks in each box.", "13": "Count the blocks that are NOT cubes.", "14": "Pick the LONG or SHORT block.", "15": "Pick the BIG or SMALL block.", "16": "Pick the group with MORE or FEWER.", "17": "Pick the TALL or SHORT tower.", "18": "Count the CUBES in each box.", "19": "Count the LONG BLOCKS in each box.", "20": "Count the CYLINDERS in each box.", "21": "Count the blocks of that shape, then type the number.", "22": "Look at the color pattern. What color is next?", "23": "Look at the shape pattern. What shape is next?", "24": "Look at the color pattern. What color is next?", "25": "Pick the thing that is UP or DOWN.", "26": "Pick the thing that is IN or OUT.", "27": "Pick the thing that is in FRONT or BEHIND.", "28": "Are these two exactly the same? Pick YES or NO.", "29": "Put them in order, SMALLEST to BIGGEST.", "30": "Count backwards, then fill in the numbers."}, "k": {"1": "Count the filled and empty boxes.", "2": "Take a quick look, then type the number.", "3": "Count the 10 and the extras, then type the number.", "4": "Count the 10 and the extras, then type the number.", "5": "Type the tens, the ones, and the number.", "6": "Fill in the missing house number.", "7": "Follow the bunny's hops. Which number does it land on?", "15": "Fill in the missing part. The last two have no pictures.", "17": "Fill in the missing part. The last two have no pictures.", "18": "Find the missing part.", "19": "Sort the blocks by size, then fill in.", "20": "Fill in the missing part.", "21": "Fill in the missing part and the sentence.", "22": "Follow the squirrel's hops. What is the total?", "23": "Count the dots on the left and right, then fill in the sentence.", "24": "Count the pencils on the left and right, then fill in the sentence.", "25": "Count the coins on the left and right, then fill in the sentence.", "26": "Make the first number 10 first, then count.", "27": "Add them up, then type the answer.", "28": "Cross out the ones that leave. How many are left?", "29": "Count backwards the number of steps.", "30": "Color the pencils. How many are left for the second color?", "8": "Count the cupcakes. Fill in the missing part.", "9": "Count the apples. Fill in the missing part.", "10": "Count the stars. Fill in the missing part.", "11": "Count the fish. Fill in the missing part.", "12": "Count the butterflies. Fill in the missing part.", "13": "Count the ladybugs. Fill in the missing part.", "14": "Count the shells. Fill in the missing part.", "16": "Count the balloons. Fill in the missing part."}}};
+function localizeHal(hal){
+  const h = localizeHal0(hal);
+  const lang = (state.activeProfile && state.activeProfile.lang) || 'id';
+  const s = SIMPLE_I18N[lang === 'en' ? 'en' : 'id'][hal.level] && SIMPLE_I18N[lang === 'en' ? 'en' : 'id'][hal.level][hal.no];
+  return s ? Object.assign({}, h, {instruksi: s, instruksiLayar: s}) : h;
 }
 
 // Household/manipulative emoji per halaman theme, used for the pictorial units.
@@ -2732,7 +2746,7 @@ function mechHopSelect(hal, item, area){
   line.appendChild(token);
   function positionToken(n){
     const chip = chips[n];
-    token.style.left = (chip.offsetLeft + chip.offsetWidth/2) + "px";
+    token.style.left = (chip.offsetLeft + chip.offsetWidth/2) + "px"; token.style.top = (chip.offsetTop - 34) + "px";
   }
   positionToken(start);
 
@@ -2988,7 +3002,7 @@ function mechCountOn(hal, item, area){
   line.appendChild(token);
   function positionToken(n){
     const chip = chips[Math.max(0,Math.min(20,n))];
-    token.style.left = (chip.offsetLeft + chip.offsetWidth/2) + "px";
+    token.style.left = (chip.offsetLeft + chip.offsetWidth/2) + "px"; token.style.top = (chip.offsetTop - 34) + "px";
   }
   positionToken(mulai);
 
@@ -3222,7 +3236,7 @@ function mechCountBack(hal, item, area){
   let cur = awal, steps = 0;
   function positionToken(n){
     const chip = chips[n];
-    token.style.left = (chip.offsetLeft + chip.offsetWidth/2) + "px";
+    token.style.left = (chip.offsetLeft + chip.offsetWidth/2) + "px"; token.style.top = (chip.offsetTop - 34) + "px";
   }
   positionToken(cur);
   const counterEl = wrap.querySelector('#cbCount');
@@ -4892,6 +4906,7 @@ function buildAndPrint(){
     document.body.style.zoom=1;
     var need=Math.max(app.scrollHeight, document.documentElement.scrollHeight), avail=window.innerHeight;
     if(need>avail+2){ document.body.style.zoom=Math.max(.5, (avail-4)/need); }
+    else if(need<avail-30 && need>0){ document.body.style.zoom=Math.min(1.3, (avail-6)/need); }
   }
   var fitT; function fitSoon(){ clearTimeout(fitT); fitT=setTimeout(fit,40); }
   new MutationObserver(function(){ fitSoon(); }).observe(document.body,{childList:true,subtree:true});

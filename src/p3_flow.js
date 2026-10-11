@@ -49,6 +49,7 @@ function pickQ(){
   const lvl=G.slot.lvl,st=STAGES[G.stageIdx].id,D=G.D;
   let hals=(CAT&&CAT[lvl]||[]).filter(h=>h.stage===st);
   if(!hals.length)hals=Array.from({length:10},(_,i)=>({no:(st-1)*10+i+1,n:5}));
+  hals=hals.slice().sort((x,y)=>x.no-y.no);{const fr=[.4,.7,1][Math.min(2,G.tIdx|0)];hals=hals.slice(0,Math.max(2,Math.ceil(hals.length*fr)));}   // easier pages first, all pages by the boss
   const c=[];let tot=0;
   hals.forEach(h=>{for(let i=0;i<(h.n||5);i++){const k=lvl+':'+h.no+':'+i;if(D.recent.includes(k))continue;const w=1+2*Math.min(4,G.slot.miss[lvl+':'+h.no]||0);tot+=w;c.push({no:h.no,idx:i,k,w});}});
   let r=Math.random()*tot,q=c[0];for(const x of c){r-=x.w;if(r<=0){q=x;break;}}
@@ -162,23 +163,30 @@ const PQ=new URLSearchParams(location.search);
 const PEER_OPTS=PQ.get('peerhost')?{host:PQ.get('peerhost'),port:+(PQ.get('peerport')||9000),path:'/',secure:PQ.get('peersecure')==='1',debug:0}:{debug:0};
 const COOP={role:null,st:'idle',code:'',peer:null,conn:null,err:'',perks:{heal:2,power:2,shield:2,gift:1},buff:{power:false,shield:false},lastPerk:0,lastPush:0,pt:0,remote:null};
 const PERK_MAX={heal:2,power:2,shield:2,gift:1};
-function mkCode(){let s='';for(let i=0;i<5;i++)s+=CODE_AL[Math.floor(Math.random()*CODE_AL.length)];return s;}
+function lsG(k){try{return localStorage.getItem(k)||'';}catch(e){return '';}}
+function lsS(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function mkCode0(){let s='';for(let i=0;i<5;i++)s+=CODE_AL[Math.floor(Math.random()*CODE_AL.length)];return s;}
 function csend(c,o){if(c&&c.open){try{c.send(o);}catch(e){}}}
 function parentLook(ic){const dad=ic==='👨';return {g:dad?0:1,skin:1,hair:0,hs:dad?0:2,outfit:dad?1:3,hat:0,pet:0};}
+function mkCode(){let c=lsG('mx_cocode');if(!/^[A-Z0-9]{5}$/.test(c)){c=mkCode0();lsS('mx_cocode',c);}return c;}
 function resetPerks(){COOP.perks=Object.assign({},PERK_MAX);COOP.buff={power:false,shield:false};}
 /* --- host side (child phone) --- */
 function coopHostStart(tries){
-  tries=tries||0;if(COOP.peer&&COOP.role==='host')return;
+  tries=tries||0;if(COOP.peer&&COOP.role==='host'){if(COOP.peer.disconnected){try{COOP.peer.reconnect();}catch(e){}}return;}
   if(typeof Peer==='undefined'){COOP.st='err';COOP.err='net';renderCoopDlg();return;}
   COOP.role='host';COOP.st='wait';COOP.err='';COOP.code=mkCode();renderCoopDlg();
   let p;try{p=new Peer(PEER_PRE+COOP.code,PEER_OPTS);}catch(e){COOP.st='err';COOP.err='net';renderCoopDlg();return;}
   COOP.peer=p;
   p.on('open',()=>{COOP.st='wait';renderCoopDlg();});
   p.on('error',err=>{
-    if(err&&err.type==='unavailable-id'&&tries<4){try{p.destroy();}catch(e){}COOP.peer=null;COOP.role=null;coopHostStart(tries+1);return;}
+    if(err&&err.type==='unavailable-id'){   // our own old session is still registered on the server: wait and retry with the SAME code
+      try{p.destroy();}catch(e){}COOP.peer=null;COOP.role=null;
+      if(tries<12){setTimeout(()=>coopHostStart(tries+1),3000);}else{lsS('mx_cocode','');COOP.code='';COOP.st='err';COOP.err='net';renderCoopDlg();}
+      return;}
     COOP.st='err';COOP.err='net';try{p.destroy();}catch(e){}COOP.peer=null;COOP.role=null;renderCoopDlg();
   });
-  p.on('disconnected',()=>{try{p.reconnect();}catch(e){}});
+  p.on('disconnected',()=>{setTimeout(()=>{try{if(COOP.peer===p&&p.disconnected)p.reconnect();}catch(e){}},1500);});
+  p.on('close',()=>{if(COOP.peer===p){COOP.peer=null;COOP.role=null;}});
   p.on('connection',c=>{
     c.on('data',d=>hostData(c,d));
     c.on('close',()=>{if(COOP.conn===c){COOP.conn=null;coopLeave();}});
@@ -189,19 +197,19 @@ function hostData(c,d){
   if(!d||typeof d!=='object')return;
   if(d.t==='hello'){
     if(COOP.conn&&COOP.conn!==c&&COOP.conn.open){csend(c,{t:'busy'});setTimeout(()=>{try{c.close();}catch(e){}},400);return;}
-    COOP.conn=c;resetPerks();
+    COOP.conn=c;resetPerks();lsS('mx_coauto','1');
     coopJoin({name:String(d.name||'').slice(0,12)||(LANG==='id'?'Mama':'Mom'),ic:d.ic==='👨'?'👨':'👩'});
     csend(c,{t:'welcome',name:G.slot?G.slot.name:'',look:G.slot?G.slot.look:G.defaultLook,lang:LANG});
     coopPush(true);
   }else if(c===COOP.conn){
     if(d.t==='perk')applyPerk(String(d.k));
     else if(d.t==='cheer')applyCheer(String(d.e||'').slice(0,4));
-    else if(d.t==='bye'){COOP.conn=null;coopLeave();}
+    else if(d.t==='bye'){COOP.conn=null;lsS('mx_coauto','');coopLeave();}
   }
 }
 function coopState(){
   const D=G.D;
-  return {mode:G.mode,stage:(G.stageIdx|0)+1,hearts:D?D.hearts:3,hp:D?D.hp:0,max:D?D.max:0,foe:D?nameOf('titan',D.T.dkey):'',coins:G.slot?G.slot.coins:0,name:G.slot?G.slot.name:'',perks:COOP.perks,buff:COOP.buff};
+  return {mode:G.mode,stage:(G.stageIdx|0)+1,hx:+(G.hx||0).toFixed(2),hy:+(G.hy||0).toFixed(2),tIdx:G.tIdx|0,hearts:D?D.hearts:3,hp:D?D.hp:0,max:D?D.max:0,foe:D?nameOf('titan',D.T.dkey):'',coins:G.slot?G.slot.coins:0,name:G.slot?G.slot.name:'',perks:COOP.perks,buff:COOP.buff};
 }
 function coopPush(now){
   if(!COOP.conn||!COOP.conn.open)return;
@@ -262,7 +270,7 @@ function openCoop(){SFX.tap();coopHostStart();EZUI.show('d-coop');renderCoopDlg(
 $('#b-coop').onclick=openCoop;
 $('#co-x').onclick=$('#co-close').onclick=()=>EZUI.hide('d-coop');
 $('#co-sim').onclick=()=>{
-  if(G.parent){csend(COOP.conn,{t:'bye'});try{COOP.conn&&COOP.conn.close();}catch(e){}COOP.conn=null;coopLeave();}
+  if(G.parent){csend(COOP.conn,{t:'bye'});try{COOP.conn&&COOP.conn.close();}catch(e){}COOP.conn=null;lsS('mx_coauto','');coopLeave();}
   else if(COOP.st==='err'){coopHostStart();}
 };
 /* --- guest side (parent phone) --- */
@@ -289,6 +297,32 @@ $('#jn-ok').onclick=()=>{
   const code=($('#jn-code').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length<5){$('#jn-err').textContent=t('jnNocode');return;}
   guestConnect(code,DB.parents[JN.sel]);
 };
+function guestRetry(){
+  if(COOP.role!=='guest'||!COOP.last||COOP.rt)return;
+  COOP.rt=true;const t0=Date.now();
+  const tick=()=>{
+    if(COOP.role!=='guest'||!COOP.last){COOP.rt=false;return;}
+    if(COOP.conn&&COOP.conn.open&&COOP.remote&&!COOP.remote.lost){COOP.rt=false;return;}
+    if(Date.now()-t0>120000){COOP.rt=false;guestEnd(true);return;}
+    const L=COOP.last;try{COOP.peer&&COOP.peer.destroy();}catch(e){}COOP.peer=null;
+    let p;try{p=new Peer(PEER_OPTS);}catch(e){setTimeout(tick,3000);return;}
+    COOP.peer=p;let done=false;
+    const again=()=>{if(done)return;done=true;try{p.destroy();}catch(e){}setTimeout(tick,2500);};
+    const to=setTimeout(again,8000);
+    p.on('error',()=>{clearTimeout(to);again();});
+    p.on('open',()=>{
+      const c=p.connect(PEER_PRE+L.code,{reliable:true});COOP.conn=c;
+      c.on('open',()=>csend(c,{t:'hello',name:L.pr.name,ic:L.pr.ic,v:1}));
+      c.on('data',d=>{clearTimeout(to);if(!done){done=true;}COOP.rt=false;guestData(d,L.pr);});
+      c.on('close',()=>{if(COOP.role==='guest'&&COOP.remote&&!COOP.remote.lost)guestLost();});
+      c.on('error',()=>{});
+    });
+  };
+  tick();
+}
+function guestLost(){
+  if(!COOP.remote)return;COOP.remote.lost=true;renderParent();COOP.rt=false;guestRetry();
+}
 function guestClose(){
   const p=COOP.peer,c=COOP.conn;if(COOP.role==='guest'){COOP.peer=null;COOP.conn=null;COOP.role=null;try{c&&c.close();}catch(e){}try{p&&p.destroy();}catch(e){}}
   JN.busy=false;
@@ -296,7 +330,7 @@ function guestClose(){
 function guestFail(key){guestClose();JN.err=key;JN.busy=false;if($('#d-join').classList.contains('show'))renderJoin();}
 function guestConnect(code,pr){
   if(typeof Peer==='undefined'){guestFail('jnNet');return;}
-  guestClose();JN.busy=true;$('#jn-err').textContent=t('jnConn');COOP.role='guest';
+  guestClose();JN.busy=true;$('#jn-err').textContent=t('jnConn');COOP.role='guest';COOP.lastCode=code;COOP.last=null;
   let p;try{p=new Peer(PEER_OPTS);}catch(e){guestFail('jnNet');return;}
   COOP.peer=p;const to=setTimeout(()=>guestFail('jnTimeout'),14000);
   p.on('error',e=>{clearTimeout(to);guestFail(e&&e.type==='peer-unavailable'?'jnNocode':'jnNet');});
@@ -304,26 +338,26 @@ function guestConnect(code,pr){
     const c=p.connect(PEER_PRE+code,{reliable:true});COOP.conn=c;
     c.on('open',()=>csend(c,{t:'hello',name:pr.name,ic:pr.ic,v:1}));
     c.on('data',d=>{clearTimeout(to);guestData(d,pr);});
-    c.on('close',()=>{if(COOP.role==='guest'){clearTimeout(to);guestEnd(true);}});
+    c.on('close',()=>{if(COOP.role==='guest'){clearTimeout(to);if(COOP.remote)guestLost();else guestFail('jnClosed');}});
     c.on('error',()=>{});
   });
 }
 function guestData(d,pr){
   if(!d||typeof d!=='object')return;
   if(d.t==='welcome'){
-    EZUI.hide('d-join');JN.busy=false;
-    COOP.remote={name:d.name||'',look:d.look,state:null,me:pr};
+    EZUI.hide('d-join');JN.busy=false;COOP.rt=false;
+    COOP.remote={name:d.name||'',look:d.look,state:null,me:pr};COOP.last={code:COOP.lastCode||(COOP.last&&COOP.last.code)||'',pr};
     const lk=sanLook(d.look);rebuildHero(lk);
     if(G.parent){scene.remove(G.parent.root);disposeGroup(G.parent.root);}
     const kid=buildKid(parentLook(pr.ic));kid.root.scale.setScalar(1.28);scene.add(kid.root);G.parent=kid;G.parentInfo=pr;G.parentWave=2;
     setMode('parent');showScreen('s-parent');heroHome();homeCam(true);renderParent();
   }else if(d.t==='busy'){guestFail('jnBusy');}
   else if(d.t==='state'&&COOP.remote){COOP.remote.state=d.s;renderParent();}
-  else if(d.t==='bye'){guestEnd(true);}
+  else if(d.t==='bye'){COOP.last=null;guestEnd(true);}
 }
 function sanLook(l){l=l||{};return {g:l.g===1?1:0,skin:clamp(l.skin|0,0,SKINS-1),hair:clamp(l.hair|0,0,HAIR_COLORS-1),hs:clamp(l.hs|0,0,HAIR_STYLES-1),outfit:clamp(l.outfit|0,0,OUTFITS.length-1),hat:HATLIST.includes(l.hat|0)?(l.hat|0):0,pet:clamp(l.pet|0,0,9)};}
 function guestEnd(remoteClosed){
-  const c=COOP.conn;if(!remoteClosed)csend(c,{t:'bye'});
+  const c=COOP.conn;if(!remoteClosed)csend(c,{t:'bye'});COOP.last=null;COOP.rt=false;pvClear(true);
   guestClose();COOP.remote=null;
   if(G.parent){scene.remove(G.parent.root);disposeGroup(G.parent.root);G.parent=null;G.parentInfo=null;}
   goTitle();if(remoteClosed)toast(t('jnClosed'),2200);
@@ -340,7 +374,7 @@ function renderParent(){
   const nm=s.name||R.name||'';$('#pc-name').textContent=nm;
   const md=s.mode,duel=md==='duel';
   const key={play:'pcWalk',duel:'pcDuel',home:'pcHome',map:'pcMap',result:'pcResult',title:'pcTitle',slots:'pcTitle',edit:'pcHome'}[md]||'pcHome';
-  $('#pc-status').textContent=nm+' '+t(key)+(duel&&s.foe?' '+s.foe:'');
+  $('#pc-status').textContent=R.lost?t('pcLost'):nm+' '+t(key)+(duel&&s.foe?' '+s.foe:'');
   $('#pc-hearts').textContent=duel?'❤️'.repeat(s.hearts)+'🤍'.repeat(Math.max(0,3-s.hearts))+(s.buff&&s.buff.power?' ⚡':'')+(s.buff&&s.buff.shield?' 🛡':''):'';
   $('#pc-hp').innerHTML=duel?Array.from({length:s.max||0},(_,i)=>'<i class="'+(i<s.hp?'on':'')+'"></i>').join(''):'';
   const P=s.perks||PERK_MAX,lab={heal:'pkHeal',power:'pkPower',shield:'pkShield',gift:'pkGift'};
@@ -352,6 +386,44 @@ function renderParent(){
 }
 $('#pc-cheer').innerHTML=['👏','⭐','❤️','🎉'].map(e=>'<button data-e="'+e+'">'+e+'</button>').join('');
 $('#pc-cheer').querySelectorAll('button').forEach(b=>b.onclick=()=>{csend(COOP.conn,{t:'cheer',e:b.dataset.e});G.parentWave=1;SFX.tap();});
+
+
+/* ---------- parent phone: mirror the child's walk / duel ---------- */
+function pvBuild(si){
+  clearWorld();G.stageIdx=si;const st=STAGES[si];
+  G.world=buildWorld(st);scene.add(G.world.g);
+  st.titans.forEach(tt=>{const T=tt.m?buildMonster(tt.d,1.7):buildTitan(Object.assign({},TITANS[tt.d]));T.root.position.set(tt.x,0,0);T.root.rotation.y=-Math.PI/2;T.x=tt.x;T.q=tt.q;T.gone=false;T.boss=!tt.m&&!!TITANS[tt.d].boss;T.dkey=tt.d;scene.add(T.root);G.titans.push(T);});
+  G.pvStage=si;
+}
+function pvClear(quiet){
+  if(!G.pvOn)return;G.pvOn=false;G.pvStage=undefined;G.pvDuel=false;G.pvHp=G.pvHearts=undefined;
+  clearWorld();G.hx=0;G.hy=0;G.hurt=0;G.hero.root.scale.setScalar(1);
+  if(!quiet){G.homeObj.g.visible=true;if(SUN)SUN.visible=false;setVisible('parent');heroHome();homeCam(true);}
+}
+function pvUpdate(dt,s){
+  const si=(s.stage|0)-1;if(si<0||si>=STAGES.length)return;
+  if(G.pvStage!==si||!G.world)pvBuild(si);
+  if(!G.pvOn){G.pvOn=true;G.hx=s.hx||0;G.homeObj.g.visible=false;G.pals.forEach(m=>m.root.visible=false);}
+  G.world.g.visible=true;ensureSun();SUN.visible=true;scene.background=skyTex('#6fb0df',STAGES[si].fog);
+  const k=1-Math.exp(-dt*6),dx=(s.hx||0)-G.hx;G.hx+=dx*k;G.hy=s.hy||0;
+  const duel=s.mode==='duel';G.pvDuel=duel;
+  const ti=s.tIdx|0;
+  G.titans.forEach((T,i)=>{const gone=T.isMon&&i<ti;T.root.visible=!gone;T.gone=gone;});
+  const T=G.titans[ti];
+  if(T&&duel){
+    if(G.pvHp!==undefined&&s.hp<G.pvHp){T.hit=1;T.flash=1;const p=new THREE.Vector3();foeTarget(T,p);burst(p.x,p.y,p.z,['#e0352f','#ff7a6a','#fff3d0','#5ec24a'],14,4,.7,6,.16);}
+    if(G.pvHearts!==undefined&&s.hearts<G.pvHearts){T.stomp=0;G.hurt=1;}
+    if(s.hp<=0)T.happy=1;
+    if(T.stomp>=0){T.stomp+=dt;if(T.stomp>=1)T.stomp=-1;}
+  }
+  G.pvHp=duel?s.hp:undefined;G.pvHearts=duel?s.hearts:undefined;
+  if(G.hurt>0)G.hurt=Math.max(0,G.hurt-dt*1.6);
+  G.hero.root.rotation.y=Math.PI/2;G.hero.root.scale.setScalar(duel?1.7:1);
+  placeHero(dt,{moving:!duel&&Math.abs(dx)>.03,air:G.hy>.05});
+  if(duel&&T){const sc=T.baseS,hN=T.isMon?3.3*sc+1.6:6.6*sc+1.2;
+    camTo.apply(null,(T.isMon?[G.hx+2.6,hN*.42,Math.max(13,hN*2.1),G.hx+2.6,hN*.38,0]:[G.hx+2.9,hN*.44,Math.max(18,hN*2.0),G.hx+2.9,hN*.4,0]).concat([6]));}
+  else{const pt=innerHeight>innerWidth;camTo(G.hx+(pt?1.7:4.5),pt?3.1:3.4,pt?9.6:11,G.hx+(pt?1.0:3.6),1.6,0,5);}
+}
 
 /* ---------- friends on the homepage: tap to talk ---------- */
 const PAL_RC=new THREE.Raycaster(),PAL_V=new THREE.Vector2();
@@ -405,7 +477,7 @@ function palTick(dt){
     if(b.t<=0||G.mode!=='home'){el.classList.remove('on');G.bub=null;}}
 }
 function goHome(){
-  rebuildPals();
+  rebuildPals();if(lsG('mx_coauto')==='1'&&!COOP.peer&&COOP.role!=='guest')coopHostStart();
   G.hero.root.scale.setScalar(1);
   setMode('home');showScreen('s-home');EZUI.hide('d-style');G.edit=null;
   refreshHomeHud();heroHome();homeCam();
@@ -605,7 +677,7 @@ function updatePlay(dt){
   });
   $('#p-fill').style.width=clamp(G.hx/st.len*100,0,100)+'%';
   G.dustT=(G.dustT||0)-dt;if(mv&&G.onGround&&G.dustT<=0){G.dustT=.22;burst(G.hx-.3,.1,.1,['#f0dc9a','#fff3c8'],3,1.4,.5,-1,.14);}
-  placeHero(dt,{moving:mv&&G.onGround,air:!G.onGround});
+  placeHero(dt,{moving:mv&&G.onGround,air:!G.onGround});if(COOP.conn)coopPush();
   {const pt=innerHeight>innerWidth;camTo(G.hx+(pt?1.7:4.5),pt?3.1:3.4,pt?9.6:11,G.hx+(pt?1.0:3.6),1.6,0,5);}
 }
 function placeHero(dt,a){
@@ -613,7 +685,7 @@ function placeHero(dt,a){
   const A=Object.assign({spd:4.2,atk:-1,hurt:0,cheer:0,faint:G.faint,wave:false},a||{});
   if(G.atkT>=0)A.atk=G.atkT;if(G.hurt>0)A.hurt=G.hurt;if(G.cheer>0)A.cheer=G.cheer;
   animKid(h,A,dt,TT);
-  if(G.parent){const duel=G.mode==='duel',P=G.parent.root,kk=1-Math.exp(-dt*5);P.scale.setScalar(duel?1.9:1.28);P.position.x+=((G.hx-(duel?.7:2.0))-P.position.x)*kk;P.position.z+=((duel?-2.4:-1.1)-P.position.z)*kk;P.position.y=G.hy*.3;P.rotation.y=Math.PI/2;animKid(G.parent,{moving:!!(a&&a.moving),air:!!(a&&a.air),spd:4.2,wave:G.parentWave>0,cheer:0,atk:-1,hurt:0,faint:false},dt,TT);G.parentWave=Math.max(0,(G.parentWave||0)-dt);}
+  if(G.parent){const duel=G.mode==='duel'||(G.mode==='parent'&&G.pvDuel),P=G.parent.root,kk=1-Math.exp(-dt*5);P.scale.setScalar(duel?1.9:1.28);P.position.x+=((G.hx-(duel?.7:2.0))-P.position.x)*kk;P.position.z+=((duel?-2.4:-1.1)-P.position.z)*kk;P.position.y=G.hy*.3;P.rotation.y=Math.PI/2;animKid(G.parent,{moving:!!(a&&a.moving),air:!!(a&&a.air),spd:4.2,wave:G.parentWave>0,cheer:0,atk:-1,hurt:0,faint:false},dt,TT);G.parentWave=Math.max(0,(G.parentWave||0)-dt);}
   if(G.petM){const P=G.petM.root;const tx=G.hx-1.9,tz=.6;P.position.x+=(tx-P.position.x)*(1-Math.exp(-dt*5));P.position.z+=(tz-P.position.z)*(1-Math.exp(-dt*5));P.position.y=G.hy*.4;P.rotation.y=Math.PI/2;petAnim(G.petM,!!(a&&a.moving),TT);}
 }
 
@@ -828,8 +900,9 @@ function openGate(lock){
   if(lock>0){b.innerHTML='<div class="mono">'+t('gWait').replace('{n}',lock)+'</div>';$('#g-ok').style.display='none';}
   else{
     $('#g-ok').style.display='';
-    b.innerHTML='<div class="mono" style="margin-bottom:8px">'+t('gBody')+'</div><div class="row"><label>'+t('name')+'</label><input class="txt" id="g-name" maxlength="12" placeholder="'+t('gName')+'"></div><div class="gq" id="g-q" style="font:800 clamp(24px,6vmin,38px) var(--f-display);text-align:center;margin:10px 0">'+genGate()+'</div><div class="row"><label>'+t('gAns')+'</label><input class="txt" id="g-a" inputmode="numeric" pattern="[0-9]*" autocomplete="off"></div>';
+    b.innerHTML='<div class="mono" style="margin-bottom:8px">'+t('gBody')+'</div><div class="row gwho" id="g-who"><button type="button" data-ic="👩" class="on">👩 '+t('gMom')+'</button><button type="button" data-ic="👨">👨 '+t('gDad')+'</button></div><div class="row"><label>'+t('name')+'</label><input class="txt" id="g-name" maxlength="12" placeholder="'+t('gName')+'"></div><div class="gq" id="g-q" style="font:800 clamp(24px,6vmin,38px) var(--f-display);text-align:center;margin:10px 0">'+genGate()+'</div><div class="row"><label>'+t('gAns')+'</label><input class="txt" id="g-a" inputmode="numeric" pattern="[0-9]*" autocomplete="off"></div>';
   }
+  b.querySelectorAll('#g-who button').forEach(x=>x.onclick=()=>{SFX.tap();b.querySelectorAll('#g-who button').forEach(y=>y.classList.toggle('on',y===x));});
   EZUI.show('d-gate');
 }
 $('#g-x').onclick=$('#g-cancel').onclick=()=>EZUI.hide('d-gate');
@@ -837,7 +910,7 @@ $('#g-ok').onclick=()=>{
   const nm=($('#g-name').value||'').trim();if(!nm){toast(t('gNeedName'));return;}
   const v=parseInt($('#g-a').value,10);
   if(v===GATE.ans){
-    DB.parents.push({id:Date.now().toString(36),name:nm,ic:DB.parents.length?'👨':'👩'});saveDB();GATE.wrong=0;
+    DB.parents.push({id:Date.now().toString(36),name:nm,ic:(document.querySelector('#g-who button.on')||{dataset:{ic:'👩'}}).dataset.ic});saveDB();GATE.wrong=0;
     EZUI.hide('d-gate');renderParents();toast(t('gOk'));SFX.ok();if($('#d-join').classList.contains('show')){JN.err='';renderJoin();}
   }else{
     GATE.wrong++;SFX.bad();
@@ -897,11 +970,12 @@ function frame(now){
     else if(m==='duel'&&G.D)updateDuel(dt);
     else if(m==='result'){placeHero(dt,{moving:false});}
     else if(m==='map'&&G.mapObj){animKid(G.hero,{moving:false,wave:true,atk:-1,hurt:0,cheer:0,faint:false},dt,TT);if(G.petM)petAnim(G.petM,false,TT);G.mapObj.titans.forEach(T=>animTitan(T,dt,TT));G.mapObj.clouds.forEach(c=>{c.g.position.x=c.x0+Math.sin(TT*c.sp)*3;});}
-    else if(m==='title'||m==='slots'||m==='home'||m==='edit'||m==='parent')updateIdle(dt);
+    else if(m==='parent'){const s=COOP.remote&&COOP.remote.state;if(s&&(s.mode==='play'||s.mode==='duel'||s.mode==='result'))pvUpdate(dt,s);else{pvClear();updateIdle(dt);}}
+    else if(m==='title'||m==='slots'||m==='home'||m==='edit')updateIdle(dt);
     if(m==='play'||m==='duel'||m==='result')updateFollowers(dt);
     G.titans.forEach(T=>animFoe(T,dt,TT));
     if(G.world){G.world.clouds.forEach(c=>{c.g.position.x=c.x0+Math.sin(TT*c.sp)*3;});G.world.pol.forEach(o=>{o.m.position.y=o.y+Math.sin(TT*1.3+o.ph)*.35;o.m.position.x=o.x+Math.sin(TT*.7+o.ph)*.5;});}
-    sunFollow(m==='play'||m==='duel'||m==='result'?G.hx:0,0);
+    sunFollow(m==='play'||m==='duel'||m==='result'||(m==='parent'&&G.pvOn)?G.hx:0,0);
     partTick(dt);fxTick(dt);
   }
   if(SUN&&SUN.visible){SUN.position.set(CAM.p.x+30,34,-90);}
@@ -931,7 +1005,7 @@ function frame(now){
   LANG=DB.lang||((navigator.language||'id').toLowerCase().startsWith('id')?'id':'en');
   AU.muted=!!DB.muted;
   initScenes();engInit();applyLang();$('#b-mute').textContent=AU.muted?'🔇':'🔊';$('#b-mute2').textContent=AU.muted?'🔇':'🔊';
-  $('#ver').textContent='prototype v1.2';
+  $('#ver').textContent='prototype v1.3';
   addEventListener('resize',()=>{if($('#s-map').classList.contains('show'))openMap();});
   if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
   goTitle();
@@ -940,3 +1014,10 @@ function frame(now){
   const first=()=>{aResume();bgmStart(AU.kind);};['pointerdown','touchstart','keydown'].forEach(e=>addEventListener(e,first,{passive:true}));
   window.__G=G;
 })();
+
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden)return;
+  if(COOP.role==='host'||(!COOP.peer&&lsG('mx_coauto')==='1'&&G.slot&&G.mode!=='title'&&G.mode!=='slots'))coopHostStart();
+  if(COOP.role==='guest'&&COOP.remote&&(!COOP.conn||!COOP.conn.open)){COOP.remote.lost=true;COOP.rt=false;guestRetry();}
+});
+addEventListener('online',()=>{if(COOP.role==='guest'&&COOP.remote&&COOP.remote.lost){COOP.rt=false;guestRetry();}else if(COOP.role==='host'&&COOP.peer&&COOP.peer.disconnected){try{COOP.peer.reconnect();}catch(e){}}});

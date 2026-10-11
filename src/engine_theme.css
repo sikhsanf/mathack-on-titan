@@ -3,7 +3,7 @@ html.embed{--pen:#2f3a73;--pencil:#58608a;--blue:#2457c5;--crayon:#ffe27a;--good
 .embed body{font-family:'Patrick Hand','Baloo 2','Comic Sans MS',cursive,sans-serif;color:var(--pen);-webkit-user-select:none;user-select:none;font-size:18px}
 .embed .page-card{padding:26px 8px 12px !important}
 .embed .page-instr .hl{background:linear-gradient(transparent 58%,rgba(255,226,122,.9) 58% 90%,transparent 90%);-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:0 6px}
-.embed .page-instr{display:block;width:auto;max-width:96%;margin:0 auto 10px !important;background:none;border:0;box-shadow:none;padding:0 8px;font:400 clamp(1.2rem,5.2vw,1.5rem)/1.2 'Patrick Hand','Baloo 2',cursive !important;color:var(--pen);text-align:center}
+.embed .page-instr{display:block;width:auto;max-width:96%;margin:0 auto 10px !important;background:none;border:0;box-shadow:none;padding:0 8px;font:400 clamp(1.5rem,6.6vw,1.95rem)/1.2 'Patrick Hand','Baloo 2',cursive !important;color:var(--pen);text-align:center}
 .embed .stage-area{gap:12px !important;margin-top:6px !important}
 .embed .item-visual-emoji,.embed .eq-sentence{font-family:'Patrick Hand','Baloo 2',cursive}
 /* paper cut-out keys & choices */
@@ -71,3 +71,10 @@ html.embed{--ic:clamp(1.5rem,min(6.2vw,4.6vh),2.4rem)}
 .embed .plus-sign{font-size:calc(var(--ic)*.9)}
 .embed .bundle-box{display:block !important;text-align:center;word-break:break-all;overflow-wrap:anywhere;padding-top:16px !important;width:calc(var(--ic)*1.25*5 + 30px) !important}
 .embed .loose-holder{width:calc(var(--ic)*1.25*5 + 30px) !important}
+
+.embed .number-line:has(.hop-token){display:grid !important;grid-template-columns:repeat(7,1fr);column-gap:6px;row-gap:38px;width:min(100%,440px);max-width:none;margin-top:34px !important}
+.embed .number-line:has(.hop-token) .nl-chip{min-width:0;width:100%;height:clamp(40px,10vw,52px);font-size:1.3rem}
+.embed .hop-token{font-size:2rem !important;z-index:3;pointer-events:none}
+.embed .pill-btn{font-size:1.5rem !important}
+.embed .np-key{font-size:1.5rem !important}
+.embed .qtype-badge{font-size:1.2rem !important}

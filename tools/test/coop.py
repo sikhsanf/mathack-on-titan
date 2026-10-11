@@ -26,6 +26,7 @@ with sync_playwright() as p:
     print('B mode',B.evaluate('__G.mode'),'A parent',A.evaluate('!!__G.parent'))
     A.wait_for_timeout(1500);A.screenshot(path=S+'3_host_joined.png');B.screenshot(path=S+'4_parent_home.png')
     A.click('#co-close');A.click('#b-go');A.wait_for_timeout(300);A.evaluate('startStage(0)');A.wait_for_timeout(1200)
+    A.evaluate('__G.hx=12;__G.go=true');A.wait_for_timeout(3500);B.screenshot(path=S+'4b_parent_walk.png');print('B pv',B.evaluate('[__G.pvOn,__G.hx.toFixed(1),__G.mode]'),'A hx',A.evaluate('__G.hx.toFixed(1)'))
     A.evaluate('__G.hx=26;__G.go=true')
     for i in range(60):
         if A.evaluate('(__G.D&&__G.D.state)||null')=='ask':break
@@ -48,5 +49,7 @@ with sync_playwright() as p:
         if A.evaluate('__G.D&&__G.D.hp')<4:break
         A.wait_for_timeout(300)
     print('hp after power hit',A.evaluate('__G.D&&__G.D.hp'),'/',A.evaluate('__G.D&&__G.D.max'),'buff',A.evaluate('JSON.stringify(COOP.buff)'));A.screenshot(path=S+'8_power_hit.png')
+    A.evaluate('COOP.conn.close()');B.wait_for_timeout(9000)
+    print('after drop: B mode',B.evaluate('__G.mode'),'lost',B.evaluate('COOP.remote&&COOP.remote.lost'),'A parent',A.evaluate('!!__G.parent'));B.screenshot(path=S+'9_reconnected.png')
     B.click('#pc-leave');B.wait_for_timeout(1000);print('B mode',B.evaluate('__G.mode'),'A parent',A.evaluate('!!__G.parent'))
     print(errs[:6]);b.close()
