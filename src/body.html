@@ -1,0 +1,89 @@
+<div id="game">
+  <canvas id="cv"></canvas>
+
+  <section class="ov scr show" id="s-title">
+    <div class="logo"><div class="logo-a">Mathack</div><div class="logo-b">on Titan</div></div>
+    <div class="tag" id="t-tag"></div>
+    <button class="pill go big" id="b-play"></button>
+    <div class="topr"><button class="chip" id="b-lang">ID</button><button class="chip" id="b-mute">🔊</button></div>
+    <div class="ver" id="ver"></div>
+  </section>
+
+  <section class="ov scr" id="s-slots">
+    <h2 id="t-slots"></h2>
+    <div class="slotrow" id="slotrow"></div>
+    <div class="botl"><button class="pill" id="b-slots-back"></button></div>
+    <div class="topr"><button class="chip" id="b-lang2">ID</button></div>
+  </section>
+
+  <section class="ov scr" id="s-home">
+    <div class="topl"><div class="hello"><span class="badge" id="h-name"></span><span class="badge coin" id="h-coins"></span></div></div>
+    <div class="topr"><button class="chip" id="b-gear">⚙️</button><button class="chip" id="b-mute2">🔊</button></div>
+    <div class="botl"><button class="pill gold big" id="b-style"></button></div>
+    <div class="botr"><button class="pill go big" id="b-go"></button></div>
+  </section>
+
+  <div class="ov side" id="d-style"><div class="panel">
+    <div class="phead"><h2 id="st-title"></h2><div class="acts"></div></div>
+    <div class="pbody" id="st-body"></div>
+    <div class="pfoot"><div class="fg"><button class="pill" id="st-back"></button></div><button class="pill go" id="st-ok"></button></div>
+  </div></div>
+
+  <section class="ov scr" id="s-map">
+    <div class="mapbg"></div>
+    <div class="maptitle" id="m-title"></div>
+    <div class="path" id="m-path"></div>
+    <div class="topl"><button class="chip" id="m-back">←</button></div>
+    <div class="topr"><span class="badge coin" id="m-coins"></span></div>
+  </section>
+
+  <section class="ov scr" id="s-play">
+    <div class="topl"><button class="chip" id="p-pause">⏸</button><span class="badge coin" id="p-coins"></span></div>
+    <div class="prog" id="p-prog"><i id="p-fill"></i></div>
+    <div class="tip" id="p-tip"></div>
+    <div class="botr"><button class="pill go jump" id="p-jump"></button></div>
+  </section>
+
+  <section class="ov scr" id="s-duel">
+    <div class="topl"><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">
+      <div style="display:flex;gap:8px;align-items:center"><button class="chip" id="d-pause">⏸</button><span class="badge" id="d-hearts"></span></div>
+      <div class="tname"><span id="d-tname"></span><div class="hp" id="d-hp"></div></div>
+    </div></div>
+    <div class="float" id="d-float"></div>
+    <div id="duelPanel"><div class="cover"></div></div>
+  </section>
+
+  <div class="ov dlg" id="d-result"><div class="panel sm">
+    <div class="phead"><h2 id="r-title"></h2></div>
+    <div class="pbody center"><div class="stars" id="r-stars"></div><div class="rw" id="r-rw"></div><div id="r-extra" class="mono"></div></div>
+    <div class="pfoot"><button class="pill" id="r-again"></button><button class="pill go" id="r-map"></button></div>
+  </div></div>
+
+  <div class="ov dlg" id="d-pause"><div class="panel sm">
+    <div class="phead"><h2 id="pa-title"></h2></div>
+    <div class="pbody center"></div>
+    <div class="pfoot"><button class="pill warn" id="pa-quit"></button><button class="pill go" id="pa-resume"></button></div>
+  </div></div>
+
+  <div class="ov dlg" id="d-confirm"><div class="panel sm">
+    <div class="phead"><h2 id="c-title"></h2></div>
+    <div class="pbody" id="c-body"></div>
+    <div class="pfoot"><button class="pill" id="c-no"></button><button class="pill warn" id="c-yes"></button></div>
+  </div></div>
+
+  <div class="ov dlg" id="d-parent"><div class="panel md">
+    <div class="phead"><h2 id="pr-title"></h2><div class="acts"><button class="xbtn" id="pr-x">✕</button></div></div>
+    <div class="pbody" id="pr-body"></div>
+    <div class="pfoot"><button class="pill" id="pr-close"></button><button class="pill go" id="pr-add"></button></div>
+  </div></div>
+
+  <div class="ov dlg top" id="d-gate"><div class="panel md">
+    <div class="phead"><h2 id="g-title"></h2><div class="acts"><button class="xbtn" id="g-x">✕</button></div></div>
+    <div class="pbody" id="g-body"></div>
+    <div class="pfoot"><button class="pill" id="g-cancel"></button><button class="pill go" id="g-ok"></button></div>
+  </div></div>
+
+  <div id="toast"></div>
+  <div id="rot"><div class="ri">📱</div><div id="rot-t"></div></div>
+  <div id="loading">⭐</div>
+</div>
