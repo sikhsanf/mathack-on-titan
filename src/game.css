@@ -288,3 +288,9 @@ input.code{text-transform:uppercase;letter-spacing:.3em;text-align:center;font:8
 .foehp i{width:20px!important;height:18px!important;border-radius:48% 48% 42% 42%!important;border:2px solid var(--ink)!important;background:#ddd6ea!important;position:relative}
 .foehp i.on{background:#e8403a!important}
 .foehp i.on::after{content:"";position:absolute;left:50%;top:-6px;width:4px;height:6px;margin-left:-2px;background:#5a3a1c;border-radius:2px}
+
+#pal-bubble{position:absolute;z-index:25;pointer-events:none;transform:translate(-50%,-100%) scale(.6);transform-origin:50% 100%;opacity:0;background:#fff;border:3px solid var(--ink);border-radius:18px;padding:6px 12px 8px;box-shadow:0 4px 0 var(--ink);max-width:62%;text-align:center;font:700 clamp(13px,3.3vmin,19px)/1.25 var(--f-display);color:var(--ink);transition:opacity .2s}
+#pal-bubble b{display:block;font-size:.78em;color:#7a5cc4;letter-spacing:.2px}
+#pal-bubble::after{content:"";position:absolute;left:50%;bottom:-11px;width:16px;height:16px;background:#fff;border:3px solid var(--ink);border-width:0 3px 3px 0;transform:translateX(-50%) rotate(45deg)}
+#pal-bubble.on{opacity:1;animation:bubpop .45s cubic-bezier(.2,1.5,.3,1) forwards}
+@keyframes bubpop{0%{transform:translate(-50%,-90%) scale(.5)}100%{transform:translate(-50%,-100%) scale(1)}}

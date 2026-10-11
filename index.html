@@ -354,8 +354,15 @@ input.code{text-transform:uppercase;letter-spacing:.3em;text-align:center;font:8
 .foehp i{width:20px!important;height:18px!important;border-radius:48% 48% 42% 42%!important;border:2px solid var(--ink)!important;background:#ddd6ea!important;position:relative}
 .foehp i.on{background:#e8403a!important}
 .foehp i.on::after{content:"";position:absolute;left:50%;top:-6px;width:4px;height:6px;margin-left:-2px;background:#5a3a1c;border-radius:2px}
+
+#pal-bubble{position:absolute;z-index:25;pointer-events:none;transform:translate(-50%,-100%) scale(.6);transform-origin:50% 100%;opacity:0;background:#fff;border:3px solid var(--ink);border-radius:18px;padding:6px 12px 8px;box-shadow:0 4px 0 var(--ink);max-width:62%;text-align:center;font:700 clamp(13px,3.3vmin,19px)/1.25 var(--f-display);color:var(--ink);transition:opacity .2s}
+#pal-bubble b{display:block;font-size:.78em;color:#7a5cc4;letter-spacing:.2px}
+#pal-bubble::after{content:"";position:absolute;left:50%;bottom:-11px;width:16px;height:16px;background:#fff;border:3px solid var(--ink);border-width:0 3px 3px 0;transform:translateX(-50%) rotate(45deg)}
+#pal-bubble.on{opacity:1;animation:bubpop .45s cubic-bezier(.2,1.5,.3,1) forwards}
+@keyframes bubpop{0%{transform:translate(-50%,-90%) scale(.5)}100%{transform:translate(-50%,-100%) scale(1)}}
 </style></head><body><div id="game">
   <canvas id="cv"></canvas>
+  <div id="pal-bubble"></div>
 
   <section class="ov scr show" id="s-title">
     <div class="logo"><div class="logo-a">Mathack</div><div class="logo-b">on Titan</div></div>
@@ -603,7 +610,7 @@ id:{
  mapTitle:'Padang Bunga',stage:'Stage',locked:'Terkunci',
  st1:'Titan Pertama',st2:'Kebun Madu',st3:'Taman Pelangi',
  coop:'Co-op',coopTitle:'Main bareng Orang Tua',coopHow:'Minta Mama atau Papa buka Mathack di HP-nya, tap tombol 👨‍👩 Orang Tua di layar awal, lalu masukkan kode ini:',coopWait:'Menunggu orang tua join',coopSim:'🧪 Simulasi join',coopOn:'lagi main bareng!',coopEnd:'Selesai Co-op',coopNone:'Belum ada akun orang tua. Tahan tombol ⚙️ selama 1,5 detik untuk menambahkan.',coopProto:'Kedua HP perlu internet.',coopJoined:'join!',wTitle:'Padang Bunga',stagesLeft:'Lanjut petualangan!',close:'Tutup', jnTitle:'Gabung Co-op sebagai Orang Tua',jnNone:'Buat akun orang tua dulu, lalu kamu bisa gabung ke permainan anak.',jnMake:'Buat akun orang tua',jnWho:'Siapa yang bergabung?',jnGate:'Jawab soal ini (khusus orang dewasa):',jnCode:'Kode dari HP anak',jnGo:'Gabung',jnConn:'Menyambung…',jnNocode:'Kode tidak ditemukan. Cek kodenya lagi.',jnNet:'Tidak bisa tersambung. Cek internet kedua HP.',jnBusy:'Sudah ada orang tua yang bergabung.',jnTimeout:'Waktu habis. Pastikan kode benar dan HP anak sedang di layar Co-op.',jnClosed:'Koneksi terputus.',jnWrong:'Jawaban belum tepat.',jnLeave:'Keluar',coopErrNet:'Tidak bisa terhubung ke server. Cek internet.',coopRetry:'Coba lagi',pcWalk:'sedang berjalan',pcHome:'di beranda',pcMap:'memilih stage',pcDuel:'melawan',pcResult:'selesai stage',pcTitle:'di layar awal',pcWait:'Menunggu…',pkHeal:'Nyawa +1',pkPower:'Super',pkShield:'Perisai',pkGift:'Hadiah',pcNote:'Kamu membantu lewat bonus, bukan menjawab soal. Bonus terbatas per stage.',pcHint:'Bonus nyawa, serangan dan perisai hanya bisa dipakai saat anak sedang melawan.',parentBtn:'👨‍👩 Orang Tua', jump:'Lompat',walk:'Jalan',stopW:'Berhenti',tapWalk:'Tap Jalan untuk melangkah!',tapJump:'Tap Lompat untuk ambil koin!',winMon:'Kenyang! Jadi teman!',pause:'Jeda',resume:'Lanjut',quit:'Keluar ke Peta',paused:'Jeda',
- hit:'Nyam!',miss:'Meleset!',faint:'Aduh, pingsan! Ayo bangun lagi!',great:'Hebat!',
+ pbub:['Halo, teman! 👋','Aku senang main sama kamu!','Apelnya enak banget tadi 🍎','Ayo petualangan lagi!','Kamu hebat berhitung!','Hehe, geli!','Aku sayang kamu 💛','Hari ini kita main apa?','Kamu pintar sekali!','Yuk hitung bareng: 1, 2, 3!','Aku kenyang dan senang 😊','Kamu teman terbaikku!'],hit:'Nyam!',miss:'Meleset!',faint:'Aduh, pingsan! Ayo bangun lagi!',great:'Hebat!',
  stageClear:'Stage Selesai!',reward:'Hadiah',stars:'Bintang',again:'Main Lagi',toMap:'Ke Peta',next:'Lanjut',
  petGift:'Pet baru untukmu!',monAppear:'Monster lapar!',monDown:'Monster kabur!',pickHair:'Model rambut',titanDown:'Titan jadi teman!',defeated:'sudah jadi teman!',
  delTitle:'Hapus karakter?',delBody:'Semua kemajuan karakter ini akan hilang.',delete:'Hapus',
@@ -630,7 +637,7 @@ en:{
  mapTitle:'Flower Meadow',stage:'Stage',locked:'Locked',
  st1:'First Titan',st2:'Honey Garden',st3:'Rainbow Park',
  coop:'Co-op',coopTitle:'Play with a Parent',coopHow:'Ask Mom or Dad to open Mathack on their phone, tap 👨‍👩 Parents on the title screen, and enter this code:',coopWait:'Waiting for a parent to join',coopSim:'🧪 Simulate join',coopOn:'is playing along!',coopEnd:'End Co-op',coopNone:'No parent account yet. Hold the ⚙️ button for 1.5 seconds to add one.',coopProto:'Both phones need internet.',coopJoined:'joined!',wTitle:'Flower Meadow',stagesLeft:'Keep adventuring!',close:'Close', jnTitle:'Join Co-op as a Parent',jnNone:'Create a parent account first, then you can join your child’s game.',jnMake:'Create parent account',jnWho:'Who is joining?',jnGate:'Answer this (adults only):',jnCode:'Code from your child’s phone',jnGo:'Join',jnConn:'Connecting…',jnNocode:'Code not found. Check the code again.',jnNet:'Could not connect. Check the internet on both phones.',jnBusy:'A parent has already joined.',jnTimeout:'Timed out. Make sure the code is right and the child’s phone is on the Co-op screen.',jnClosed:'Connection lost.',jnWrong:'Not quite right.',jnLeave:'Leave',coopErrNet:'Could not reach the server. Check your internet.',coopRetry:'Try again',pcWalk:'is walking',pcHome:'is at home',pcMap:'is choosing a stage',pcDuel:'is fighting',pcResult:'finished the stage',pcTitle:'is at the title screen',pcWait:'Waiting…',pkHeal:'Heart +1',pkPower:'Super hit',pkShield:'Shield',pkGift:'Gift',pcNote:'You help with bonuses, not by answering. Bonuses are limited per stage.',pcHint:'Heart, hit and shield bonuses only work while your child is in a fight.',parentBtn:'👨‍👩 Parents', jump:'Jump',walk:'Walk',stopW:'Stop',tapWalk:'Tap Walk to move!',tapJump:'Tap Jump to grab coins!',winMon:'Full! New friend!',pause:'Pause',resume:'Resume',quit:'Back to Map',paused:'Paused',
- hit:'Yum!',miss:'Missed!',faint:'Oops, you fainted! Get up again!',great:'Great!',
+ pbub:['Hi, friend! 👋','I love playing with you!','That apple was so yummy 🍎','Let’s go on an adventure!','You’re great at counting!','Hehe, that tickles!','I like you so much 💛','What shall we play today?','You’re so smart!','Count with me: 1, 2, 3!','I’m full and happy 😊','You’re my best friend!'],hit:'Yum!',miss:'Missed!',faint:'Oops, you fainted! Get up again!',great:'Great!',
  stageClear:'Stage Clear!',reward:'Rewards',stars:'Stars',again:'Play Again',toMap:'To Map',next:'Next',
  petGift:'A new pet for you!',monAppear:'A hungry monster!',monDown:'The monster ran away!',pickHair:'Hairstyle',titanDown:'The Titan is your friend!',defeated:'is your friend now!',
  delTitle:'Delete character?',delBody:'All progress of this character will be lost.',delete:'Delete',
@@ -1264,7 +1271,7 @@ function rebuildPals(){
   let mi=0,ti=0;
   fr.forEach(k=>{
     if(MONDEF[k]){const p=MS[mi++%MS.length];const m=buildMonster(k,.85);m.root.position.set(p[0],0,p[1]);m.root.rotation.y=p[0]<0?.7:-.7;m.star.visible=false;scene.add(m.root);G.pals.push(m);}
-    else if(TITANS[k]){const p=TS[ti++%TS.length];const T=buildTitan(Object.assign({},TITANS[k],{s:.55}));T.root.position.set(p[0],0,p[1]);T.root.rotation.y=p[0]<0?.5:-.5;T.wave=1;T.star.visible=false;scene.add(T.root);G.pals.push(T);}
+    else if(TITANS[k]){const p=TS[ti++%TS.length];const T=buildTitan(Object.assign({},TITANS[k],{s:.55}));T.root.position.set(p[0],0,p[1]);T.root.rotation.y=p[0]<0?.5:-.5;T.wave=1;T.key=T.dkey=k;T.star.visible=false;scene.add(T.root);G.pals.push(T);}
   });
   if(G.mode)setVisible(G.mode);
 }
@@ -1531,6 +1538,58 @@ function renderParent(){
 }
 $('#pc-cheer').innerHTML=['👏','⭐','❤️','🎉'].map(e=>'<button data-e="'+e+'">'+e+'</button>').join('');
 $('#pc-cheer').querySelectorAll('button').forEach(b=>b.onclick=()=>{csend(COOP.conn,{t:'cheer',e:b.dataset.e});G.parentWave=1;SFX.tap();});
+
+/* ---------- friends on the homepage: tap to talk ---------- */
+const PAL_RC=new THREE.Raycaster(),PAL_V=new THREE.Vector2();
+function monVoice(key){
+  const c=aCtx();if(!c)return;const n=c.currentTime;
+  switch(key){
+    case 'sprout':tone(900,n,.07,'triangle',.11,1300);tone(1100,n+.11,.09,'triangle',.11,1500);break;
+    case 'jelly':tone(260,n,.3,'sine',.16,520);tone(520,n+.28,.22,'sine',.1,300);break;
+    case 'bunny':tone(700,n,.1,'sine',.11,900);tone(820,n+.13,.12,'sine',.11,1050);break;
+    case 'bee':tone(220,n,.4,'sawtooth',.06,270);tone(226,n,.4,'sawtooth',.05,262);noise(n,.35,.04,2600);break;
+    case 'moth':noise(n,.25,.07,3600);tone(1200,n,.22,'sine',.05,1700);break;
+    case 'shroom':tone(200,n,.22,'sine',.18,540);tone(540,n+.2,.2,'sine',.1,260);break;
+    case 'matahari':tone(110,n,.55,'sawtooth',.08,160);tone(55,n,.55,'sine',.16,80);break;
+    case 'madu':tone(135,n,.5,'triangle',.14,95);tone(70,n+.05,.5,'sine',.14,60);break;
+    case 'raja':tone(95,n,.3,'sawtooth',.07,150);tone(150,n+.3,.4,'triangle',.12,100);break;
+    default:tone(600,n,.15,'triangle',.1,800);
+  }
+}
+function palBubble(p){
+  const T=TX[LANG],L=T.pbub;let k;do{k=(Math.random()*L.length)|0;}while(k===G.palLast&&L.length>1);G.palLast=k;
+  const b=$('#pal-bubble');b.innerHTML='<b></b><span></span>';b.firstChild.textContent=nameOf('titan',p.key||p.dkey||'');b.lastChild.textContent=L[k];
+  b.classList.remove('on');void b.offsetWidth;b.classList.add('on');G.bub={p,t:2.8};
+}
+function palTap(p){
+  p.rt=.0001;p.taps=(p.taps||0)+1;monVoice(p.key||p.dkey);
+  const h=p.isMon?p.def.h*p.baseS:6.6*p.baseS+1.2;
+  burst(p.root.position.x,p.root.position.y+h*.8,p.root.position.z+.4,['#ff8fb0','#ff5c8a','#fff'],8,2.4,.9,3,.2);
+  if(p.taps%5===0){confetti(p.root.position.x,h,p.root.position.z);SFX.ok();}
+  palBubble(p);
+}
+cv.addEventListener('pointerdown',e=>{
+  if(G.mode!=='home'||!G.pals||!G.pals.length)return;
+  const r=cv.getBoundingClientRect();PAL_V.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);
+  PAL_RC.setFromCamera(PAL_V,cam);
+  const hit=PAL_RC.intersectObjects(G.pals.map(p=>p.root),true)[0];if(!hit)return;
+  let o=hit.object;while(o){const p=G.pals.find(q=>q.root===o);if(p){palTap(p);return;}o=o.parent;}
+});
+function palTick(dt){
+  G.pals.forEach(p=>{
+    if(p.y0===undefined){p.y0=p.root.rotation.y;}
+    if(p.rt>0){p.rt+=dt/.9;const u=Math.min(1,p.rt);
+      p.root.position.y=Math.sin(u*Math.PI*(p.isMon?2:1))*(p.isMon?.9:.45);
+      p.root.rotation.y=p.y0*(1-u)+(p.isMon?Math.PI*2*u:0);
+      if(!p.isMon){p.happy=1;}
+      if(u>=1){p.rt=0;p.root.position.y=0;p.root.rotation.y=p.y0*0+0;p.y0=0;if(!p.isMon)p.happy=0;}}
+  });
+  const b=G.bub,el=$('#pal-bubble');
+  if(b){b.t-=dt;
+    const p=b.p,h=(p.isMon?p.def.h*p.baseS:6.6*p.baseS+1.2)+.5,v=new THREE.Vector3(p.root.position.x,p.root.position.y+h,p.root.position.z).project(cam);
+    el.style.left=((v.x*.5+.5)*100)+'%';el.style.top=((-v.y*.5+.5)*100)+'%';
+    if(b.t<=0||G.mode!=='home'){el.classList.remove('on');G.bub=null;}}
+}
 function goHome(){
   rebuildPals();
   G.hero.root.scale.setScalar(1);
@@ -2011,7 +2070,7 @@ function updateIdle(dt){
   animKid(G.hero,{moving:false,wave:m==='title',atk:-1,hurt:0,cheer:0,faint:false},dt,TT);
   if(G.petM)petAnim(G.petM,false,TT);
   G.homeObj.clouds.forEach(c=>{c.g.position.x=((c.x0+TT*c.sp+20)%44)-20;});
-  G.pals.forEach(p=>animFoe(p,dt,TT));
+  G.pals.forEach(p=>animFoe(p,dt,TT));palTick(dt);
   if(G.parent){animKid(G.parent,{moving:false,wave:G.parentWave>0,atk:-1,hurt:0,cheer:G.parentWave>0?0:0,faint:false},dt,TT);G.parentWave=Math.max(0,(G.parentWave||0)-dt);}
   if(m==='title'||m==='slots')updateChase(dt);
 }
@@ -2058,7 +2117,7 @@ function frame(now){
   LANG=DB.lang||((navigator.language||'id').toLowerCase().startsWith('id')?'id':'en');
   AU.muted=!!DB.muted;
   initScenes();engInit();applyLang();$('#b-mute').textContent=AU.muted?'🔇':'🔊';$('#b-mute2').textContent=AU.muted?'🔇':'🔊';
-  $('#ver').textContent='prototype v1.1';
+  $('#ver').textContent='prototype v1.2';
   addEventListener('resize',()=>{if($('#s-map').classList.contains('show'))openMap();});
   if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
   goTitle();

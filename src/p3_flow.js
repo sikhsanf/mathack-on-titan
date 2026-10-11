@@ -85,7 +85,7 @@ function rebuildPals(){
   let mi=0,ti=0;
   fr.forEach(k=>{
     if(MONDEF[k]){const p=MS[mi++%MS.length];const m=buildMonster(k,.85);m.root.position.set(p[0],0,p[1]);m.root.rotation.y=p[0]<0?.7:-.7;m.star.visible=false;scene.add(m.root);G.pals.push(m);}
-    else if(TITANS[k]){const p=TS[ti++%TS.length];const T=buildTitan(Object.assign({},TITANS[k],{s:.55}));T.root.position.set(p[0],0,p[1]);T.root.rotation.y=p[0]<0?.5:-.5;T.wave=1;T.star.visible=false;scene.add(T.root);G.pals.push(T);}
+    else if(TITANS[k]){const p=TS[ti++%TS.length];const T=buildTitan(Object.assign({},TITANS[k],{s:.55}));T.root.position.set(p[0],0,p[1]);T.root.rotation.y=p[0]<0?.5:-.5;T.wave=1;T.key=T.dkey=k;T.star.visible=false;scene.add(T.root);G.pals.push(T);}
   });
   if(G.mode)setVisible(G.mode);
 }
@@ -352,6 +352,58 @@ function renderParent(){
 }
 $('#pc-cheer').innerHTML=['👏','⭐','❤️','🎉'].map(e=>'<button data-e="'+e+'">'+e+'</button>').join('');
 $('#pc-cheer').querySelectorAll('button').forEach(b=>b.onclick=()=>{csend(COOP.conn,{t:'cheer',e:b.dataset.e});G.parentWave=1;SFX.tap();});
+
+/* ---------- friends on the homepage: tap to talk ---------- */
+const PAL_RC=new THREE.Raycaster(),PAL_V=new THREE.Vector2();
+function monVoice(key){
+  const c=aCtx();if(!c)return;const n=c.currentTime;
+  switch(key){
+    case 'sprout':tone(900,n,.07,'triangle',.11,1300);tone(1100,n+.11,.09,'triangle',.11,1500);break;
+    case 'jelly':tone(260,n,.3,'sine',.16,520);tone(520,n+.28,.22,'sine',.1,300);break;
+    case 'bunny':tone(700,n,.1,'sine',.11,900);tone(820,n+.13,.12,'sine',.11,1050);break;
+    case 'bee':tone(220,n,.4,'sawtooth',.06,270);tone(226,n,.4,'sawtooth',.05,262);noise(n,.35,.04,2600);break;
+    case 'moth':noise(n,.25,.07,3600);tone(1200,n,.22,'sine',.05,1700);break;
+    case 'shroom':tone(200,n,.22,'sine',.18,540);tone(540,n+.2,.2,'sine',.1,260);break;
+    case 'matahari':tone(110,n,.55,'sawtooth',.08,160);tone(55,n,.55,'sine',.16,80);break;
+    case 'madu':tone(135,n,.5,'triangle',.14,95);tone(70,n+.05,.5,'sine',.14,60);break;
+    case 'raja':tone(95,n,.3,'sawtooth',.07,150);tone(150,n+.3,.4,'triangle',.12,100);break;
+    default:tone(600,n,.15,'triangle',.1,800);
+  }
+}
+function palBubble(p){
+  const T=TX[LANG],L=T.pbub;let k;do{k=(Math.random()*L.length)|0;}while(k===G.palLast&&L.length>1);G.palLast=k;
+  const b=$('#pal-bubble');b.innerHTML='<b></b><span></span>';b.firstChild.textContent=nameOf('titan',p.key||p.dkey||'');b.lastChild.textContent=L[k];
+  b.classList.remove('on');void b.offsetWidth;b.classList.add('on');G.bub={p,t:2.8};
+}
+function palTap(p){
+  p.rt=.0001;p.taps=(p.taps||0)+1;monVoice(p.key||p.dkey);
+  const h=p.isMon?p.def.h*p.baseS:6.6*p.baseS+1.2;
+  burst(p.root.position.x,p.root.position.y+h*.8,p.root.position.z+.4,['#ff8fb0','#ff5c8a','#fff'],8,2.4,.9,3,.2);
+  if(p.taps%5===0){confetti(p.root.position.x,h,p.root.position.z);SFX.ok();}
+  palBubble(p);
+}
+cv.addEventListener('pointerdown',e=>{
+  if(G.mode!=='home'||!G.pals||!G.pals.length)return;
+  const r=cv.getBoundingClientRect();PAL_V.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);
+  PAL_RC.setFromCamera(PAL_V,cam);
+  const hit=PAL_RC.intersectObjects(G.pals.map(p=>p.root),true)[0];if(!hit)return;
+  let o=hit.object;while(o){const p=G.pals.find(q=>q.root===o);if(p){palTap(p);return;}o=o.parent;}
+});
+function palTick(dt){
+  G.pals.forEach(p=>{
+    if(p.y0===undefined){p.y0=p.root.rotation.y;}
+    if(p.rt>0){p.rt+=dt/.9;const u=Math.min(1,p.rt);
+      p.root.position.y=Math.sin(u*Math.PI*(p.isMon?2:1))*(p.isMon?.9:.45);
+      p.root.rotation.y=p.y0*(1-u)+(p.isMon?Math.PI*2*u:0);
+      if(!p.isMon){p.happy=1;}
+      if(u>=1){p.rt=0;p.root.position.y=0;p.root.rotation.y=p.y0*0+0;p.y0=0;if(!p.isMon)p.happy=0;}}
+  });
+  const b=G.bub,el=$('#pal-bubble');
+  if(b){b.t-=dt;
+    const p=b.p,h=(p.isMon?p.def.h*p.baseS:6.6*p.baseS+1.2)+.5,v=new THREE.Vector3(p.root.position.x,p.root.position.y+h,p.root.position.z).project(cam);
+    el.style.left=((v.x*.5+.5)*100)+'%';el.style.top=((-v.y*.5+.5)*100)+'%';
+    if(b.t<=0||G.mode!=='home'){el.classList.remove('on');G.bub=null;}}
+}
 function goHome(){
   rebuildPals();
   G.hero.root.scale.setScalar(1);
@@ -832,7 +884,7 @@ function updateIdle(dt){
   animKid(G.hero,{moving:false,wave:m==='title',atk:-1,hurt:0,cheer:0,faint:false},dt,TT);
   if(G.petM)petAnim(G.petM,false,TT);
   G.homeObj.clouds.forEach(c=>{c.g.position.x=((c.x0+TT*c.sp+20)%44)-20;});
-  G.pals.forEach(p=>animFoe(p,dt,TT));
+  G.pals.forEach(p=>animFoe(p,dt,TT));palTick(dt);
   if(G.parent){animKid(G.parent,{moving:false,wave:G.parentWave>0,atk:-1,hurt:0,cheer:G.parentWave>0?0:0,faint:false},dt,TT);G.parentWave=Math.max(0,(G.parentWave||0)-dt);}
   if(m==='title'||m==='slots')updateChase(dt);
 }
@@ -879,7 +931,7 @@ function frame(now){
   LANG=DB.lang||((navigator.language||'id').toLowerCase().startsWith('id')?'id':'en');
   AU.muted=!!DB.muted;
   initScenes();engInit();applyLang();$('#b-mute').textContent=AU.muted?'🔇':'🔊';$('#b-mute2').textContent=AU.muted?'🔇':'🔊';
-  $('#ver').textContent='prototype v1.1';
+  $('#ver').textContent='prototype v1.2';
   addEventListener('resize',()=>{if($('#s-map').classList.contains('show'))openMap();});
   if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
   goTitle();
