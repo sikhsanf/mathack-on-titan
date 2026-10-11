@@ -349,6 +349,11 @@ input.txt{font:700 18px var(--f-body);padding:10px 14px;border-radius:14px;borde
 .jnacc button.on{background:var(--sun)}
 .jnerr{color:#c0392b;font:800 14px var(--f-display);min-height:1.2em;margin-top:6px}
 input.code{text-transform:uppercase;letter-spacing:.3em;text-align:center;font:800 24px var(--f-display)}
+
+/* apple hunger bar: red = still hungry, grey = eaten */
+.foehp i{width:20px!important;height:18px!important;border-radius:48% 48% 42% 42%!important;border:2px solid var(--ink)!important;background:#ddd6ea!important;position:relative}
+.foehp i.on{background:#e8403a!important}
+.foehp i.on::after{content:"";position:absolute;left:50%;top:-6px;width:4px;height:6px;margin-left:-2px;background:#5a3a1c;border-radius:2px}
 </style></head><body><div id="game">
   <canvas id="cv"></canvas>
 
@@ -597,17 +602,17 @@ id:{
  homePlay:'Main',homeStyle:'Ganti Gaya',coins:'Koin',parent:'Orang Tua',
  mapTitle:'Padang Bunga',stage:'Stage',locked:'Terkunci',
  st1:'Titan Pertama',st2:'Kebun Madu',st3:'Taman Pelangi',
- coop:'Co-op',coopTitle:'Main bareng Orang Tua',coopHow:'Minta Mama atau Papa buka Mathack di HP-nya, tap tombol 👨‍👩 Orang Tua di layar awal, lalu masukkan kode ini:',coopWait:'Menunggu orang tua join',coopSim:'🧪 Simulasi join',coopOn:'lagi main bareng!',coopEnd:'Selesai Co-op',coopNone:'Belum ada akun orang tua. Tahan tombol ⚙️ selama 1,5 detik untuk menambahkan.',coopProto:'Kedua HP perlu internet.',coopJoined:'join!',wTitle:'Padang Bunga',stagesLeft:'Lanjut petualangan!',close:'Tutup', jnTitle:'Gabung Co-op sebagai Orang Tua',jnNone:'Buat akun orang tua dulu, lalu kamu bisa gabung ke permainan anak.',jnMake:'Buat akun orang tua',jnWho:'Siapa yang bergabung?',jnGate:'Jawab soal ini (khusus orang dewasa):',jnCode:'Kode dari HP anak',jnGo:'Gabung',jnConn:'Menyambung…',jnNocode:'Kode tidak ditemukan. Cek kodenya lagi.',jnNet:'Tidak bisa tersambung. Cek internet kedua HP.',jnBusy:'Sudah ada orang tua yang bergabung.',jnTimeout:'Waktu habis. Pastikan kode benar dan HP anak sedang di layar Co-op.',jnClosed:'Koneksi terputus.',jnWrong:'Jawaban belum tepat.',jnLeave:'Keluar',coopErrNet:'Tidak bisa terhubung ke server. Cek internet.',coopRetry:'Coba lagi',pcWalk:'sedang berjalan',pcHome:'di beranda',pcMap:'memilih stage',pcDuel:'melawan',pcResult:'selesai stage',pcTitle:'di layar awal',pcWait:'Menunggu…',pkHeal:'Nyawa +1',pkPower:'Super',pkShield:'Perisai',pkGift:'Hadiah',pcNote:'Kamu membantu lewat bonus, bukan menjawab soal. Bonus terbatas per stage.',pcHint:'Bonus nyawa, serangan dan perisai hanya bisa dipakai saat anak sedang melawan.',parentBtn:'👨‍👩 Orang Tua', jump:'Lompat',walk:'Jalan',stopW:'Berhenti',tapWalk:'Tap Jalan untuk melangkah!',tapJump:'Tap Lompat untuk ambil koin!',winMon:'Hore, menang!',pause:'Jeda',resume:'Lanjut',quit:'Keluar ke Peta',paused:'Jeda',
- hit:'Kena!',miss:'Meleset!',faint:'Aduh, pingsan! Ayo bangun lagi!',great:'Hebat!',
+ coop:'Co-op',coopTitle:'Main bareng Orang Tua',coopHow:'Minta Mama atau Papa buka Mathack di HP-nya, tap tombol 👨‍👩 Orang Tua di layar awal, lalu masukkan kode ini:',coopWait:'Menunggu orang tua join',coopSim:'🧪 Simulasi join',coopOn:'lagi main bareng!',coopEnd:'Selesai Co-op',coopNone:'Belum ada akun orang tua. Tahan tombol ⚙️ selama 1,5 detik untuk menambahkan.',coopProto:'Kedua HP perlu internet.',coopJoined:'join!',wTitle:'Padang Bunga',stagesLeft:'Lanjut petualangan!',close:'Tutup', jnTitle:'Gabung Co-op sebagai Orang Tua',jnNone:'Buat akun orang tua dulu, lalu kamu bisa gabung ke permainan anak.',jnMake:'Buat akun orang tua',jnWho:'Siapa yang bergabung?',jnGate:'Jawab soal ini (khusus orang dewasa):',jnCode:'Kode dari HP anak',jnGo:'Gabung',jnConn:'Menyambung…',jnNocode:'Kode tidak ditemukan. Cek kodenya lagi.',jnNet:'Tidak bisa tersambung. Cek internet kedua HP.',jnBusy:'Sudah ada orang tua yang bergabung.',jnTimeout:'Waktu habis. Pastikan kode benar dan HP anak sedang di layar Co-op.',jnClosed:'Koneksi terputus.',jnWrong:'Jawaban belum tepat.',jnLeave:'Keluar',coopErrNet:'Tidak bisa terhubung ke server. Cek internet.',coopRetry:'Coba lagi',pcWalk:'sedang berjalan',pcHome:'di beranda',pcMap:'memilih stage',pcDuel:'melawan',pcResult:'selesai stage',pcTitle:'di layar awal',pcWait:'Menunggu…',pkHeal:'Nyawa +1',pkPower:'Super',pkShield:'Perisai',pkGift:'Hadiah',pcNote:'Kamu membantu lewat bonus, bukan menjawab soal. Bonus terbatas per stage.',pcHint:'Bonus nyawa, serangan dan perisai hanya bisa dipakai saat anak sedang melawan.',parentBtn:'👨‍👩 Orang Tua', jump:'Lompat',walk:'Jalan',stopW:'Berhenti',tapWalk:'Tap Jalan untuk melangkah!',tapJump:'Tap Lompat untuk ambil koin!',winMon:'Kenyang! Jadi teman!',pause:'Jeda',resume:'Lanjut',quit:'Keluar ke Peta',paused:'Jeda',
+ hit:'Nyam!',miss:'Meleset!',faint:'Aduh, pingsan! Ayo bangun lagi!',great:'Hebat!',
  stageClear:'Stage Selesai!',reward:'Hadiah',stars:'Bintang',again:'Main Lagi',toMap:'Ke Peta',next:'Lanjut',
- petGift:'Pet baru untukmu!',monAppear:'Monster muncul!',monDown:'Monster kabur!',pickHair:'Model rambut',titanDown:'Titan menyerah!',defeated:'sudah jadi teman!',
+ petGift:'Pet baru untukmu!',monAppear:'Monster lapar!',monDown:'Monster kabur!',pickHair:'Model rambut',titanDown:'Titan jadi jinak!',defeated:'sudah jadi teman!',
  delTitle:'Hapus karakter?',delBody:'Semua kemajuan karakter ini akan hilang.',delete:'Hapus',
  rotate:'Putar HP ke posisi mendatar',
  pTitle:'Menu Orang Tua',pHold:'Tahan ikon gear 1,5 detik',pAccounts:'Akun orang tua',pAdd:'Buat akun orang tua',pEmpty:'Belum ada akun orang tua.',
  pSoon:'Co-op dengan orang tua segera hadir. Orang tua nanti bergabung dari HP sendiri untuk membantu anak.',
  gTitle:'Verifikasi Orang Tua',gBody:'Jawab soal ini untuk membuat akun orang tua. Soalnya khusus orang dewasa.',gName:'Nama panggilan (mis. Mama)',gAns:'Jawaban',gCheck:'Periksa',gWrong:'Belum tepat, coba lagi.',gWait:'Terlalu banyak salah. Coba lagi dalam {n} detik.',gMax:'Maksimal 2 akun orang tua.',gOk:'Akun orang tua dibuat!',gNeedName:'Isi nama panggilan dulu.',
  soon:'Segera hadir',sound:'Suara',lang:'Bahasa',loading:'Memuat soal...',
- tipJump:'Tekan Lompat untuk mengambil koin!',tipTitan:'Titan di depan! Jawab soal untuk menyerang!',
+ tipJump:'Tekan Lompat untuk mengambil koin!',tipTitan:'Titan lapar! Jawab soal untuk lempar apel!',
  heartsLeft:'Hati',titanHp:'Kekuatan Titan',
  hatNames:{1:'Pita',2:'Topi Biru',3:'Topi Koki',4:'Mahkota Bunga',5:'Telinga Kucing',6:'Telinga Beruang',8:'Helm Akuarium',10:'Topi Jerami',14:'Topi Bebek',15:'Topi Pesta',16:'Mahkota',17:'Helm',18:'Topi Jamur',19:'Topi Naga',20:'Topi Pelangi'},
  hsNames:['Pendek','Bob','Panjang','Kuncir Kuda','Kuncir Dua','Jabrik','Cepak','Sanggul','Mohawk','Rapi','Gondrong','Pixie'],
@@ -624,17 +629,17 @@ en:{
  homePlay:'Play',homeStyle:'Style',coins:'Coins',parent:'Parents',
  mapTitle:'Flower Meadow',stage:'Stage',locked:'Locked',
  st1:'First Titan',st2:'Honey Garden',st3:'Rainbow Park',
- coop:'Co-op',coopTitle:'Play with a Parent',coopHow:'Ask Mom or Dad to open Mathack on their phone, tap 👨‍👩 Parents on the title screen, and enter this code:',coopWait:'Waiting for a parent to join',coopSim:'🧪 Simulate join',coopOn:'is playing along!',coopEnd:'End Co-op',coopNone:'No parent account yet. Hold the ⚙️ button for 1.5 seconds to add one.',coopProto:'Both phones need internet.',coopJoined:'joined!',wTitle:'Flower Meadow',stagesLeft:'Keep adventuring!',close:'Close', jnTitle:'Join Co-op as a Parent',jnNone:'Create a parent account first, then you can join your child’s game.',jnMake:'Create parent account',jnWho:'Who is joining?',jnGate:'Answer this (adults only):',jnCode:'Code from your child’s phone',jnGo:'Join',jnConn:'Connecting…',jnNocode:'Code not found. Check the code again.',jnNet:'Could not connect. Check the internet on both phones.',jnBusy:'A parent has already joined.',jnTimeout:'Timed out. Make sure the code is right and the child’s phone is on the Co-op screen.',jnClosed:'Connection lost.',jnWrong:'Not quite right.',jnLeave:'Leave',coopErrNet:'Could not reach the server. Check your internet.',coopRetry:'Try again',pcWalk:'is walking',pcHome:'is at home',pcMap:'is choosing a stage',pcDuel:'is fighting',pcResult:'finished the stage',pcTitle:'is at the title screen',pcWait:'Waiting…',pkHeal:'Heart +1',pkPower:'Super hit',pkShield:'Shield',pkGift:'Gift',pcNote:'You help with bonuses, not by answering. Bonuses are limited per stage.',pcHint:'Heart, hit and shield bonuses only work while your child is in a fight.',parentBtn:'👨‍👩 Parents', jump:'Jump',walk:'Walk',stopW:'Stop',tapWalk:'Tap Walk to move!',tapJump:'Tap Jump to grab coins!',winMon:'You win!',pause:'Pause',resume:'Resume',quit:'Back to Map',paused:'Paused',
- hit:'Hit!',miss:'Missed!',faint:'Oops, you fainted! Get up again!',great:'Great!',
+ coop:'Co-op',coopTitle:'Play with a Parent',coopHow:'Ask Mom or Dad to open Mathack on their phone, tap 👨‍👩 Parents on the title screen, and enter this code:',coopWait:'Waiting for a parent to join',coopSim:'🧪 Simulate join',coopOn:'is playing along!',coopEnd:'End Co-op',coopNone:'No parent account yet. Hold the ⚙️ button for 1.5 seconds to add one.',coopProto:'Both phones need internet.',coopJoined:'joined!',wTitle:'Flower Meadow',stagesLeft:'Keep adventuring!',close:'Close', jnTitle:'Join Co-op as a Parent',jnNone:'Create a parent account first, then you can join your child’s game.',jnMake:'Create parent account',jnWho:'Who is joining?',jnGate:'Answer this (adults only):',jnCode:'Code from your child’s phone',jnGo:'Join',jnConn:'Connecting…',jnNocode:'Code not found. Check the code again.',jnNet:'Could not connect. Check the internet on both phones.',jnBusy:'A parent has already joined.',jnTimeout:'Timed out. Make sure the code is right and the child’s phone is on the Co-op screen.',jnClosed:'Connection lost.',jnWrong:'Not quite right.',jnLeave:'Leave',coopErrNet:'Could not reach the server. Check your internet.',coopRetry:'Try again',pcWalk:'is walking',pcHome:'is at home',pcMap:'is choosing a stage',pcDuel:'is fighting',pcResult:'finished the stage',pcTitle:'is at the title screen',pcWait:'Waiting…',pkHeal:'Heart +1',pkPower:'Super hit',pkShield:'Shield',pkGift:'Gift',pcNote:'You help with bonuses, not by answering. Bonuses are limited per stage.',pcHint:'Heart, hit and shield bonuses only work while your child is in a fight.',parentBtn:'👨‍👩 Parents', jump:'Jump',walk:'Walk',stopW:'Stop',tapWalk:'Tap Walk to move!',tapJump:'Tap Jump to grab coins!',winMon:'Full! New friend!',pause:'Pause',resume:'Resume',quit:'Back to Map',paused:'Paused',
+ hit:'Yum!',miss:'Missed!',faint:'Oops, you fainted! Get up again!',great:'Great!',
  stageClear:'Stage Clear!',reward:'Rewards',stars:'Stars',again:'Play Again',toMap:'To Map',next:'Next',
- petGift:'A new pet for you!',monAppear:'A monster!',monDown:'The monster ran away!',pickHair:'Hairstyle',titanDown:'The Titan gives up!',defeated:'is your friend now!',
+ petGift:'A new pet for you!',monAppear:'A hungry monster!',monDown:'The monster ran away!',pickHair:'Hairstyle',titanDown:'The Titan is tame!',defeated:'is your friend now!',
  delTitle:'Delete character?',delBody:'All progress of this character will be lost.',delete:'Delete',
  rotate:'Please rotate your phone to landscape',
  pTitle:'Parent Menu',pHold:'Hold the gear icon for 1.5 seconds',pAccounts:'Parent accounts',pAdd:'Create parent account',pEmpty:'No parent accounts yet.',
  pSoon:'Co-op with parents is coming soon. A parent will join from their own phone to help the child.',
  gTitle:'Parent Check',gBody:'Answer this to create a parent account. This question is for adults.',gName:'Nickname (e.g. Mom)',gAns:'Answer',gCheck:'Check',gWrong:'Not quite, try again.',gWait:'Too many wrong answers. Try again in {n}s.',gMax:'Maximum 2 parent accounts.',gOk:'Parent account created!',gNeedName:'Please enter a nickname first.',
  soon:'Coming soon',sound:'Sound',lang:'Language',loading:'Loading questions...',
- tipJump:'Press Jump to grab coins!',tipTitan:'A Titan ahead! Answer questions to attack!',
+ tipJump:'Press Jump to grab coins!',tipTitan:'A hungry Titan! Answer to throw apples!',
  heartsLeft:'Hearts',titanHp:'Titan power',
  hatNames:{1:'Ribbon',2:'Blue Cap',3:'Chef Hat',4:'Flower Crown',5:'Cat Ears',6:'Bear Ears',8:'Aquarium Helmet',10:'Straw Hat',14:'Duck Hat',15:'Party Hat',16:'Crown',17:'Helmet',18:'Mushroom Hat',19:'Dragon Hat',20:'Rainbow Hat'},
  hsNames:['Short','Bob','Long','Ponytail','Twin Tails','Spiky','Buzz','Bun','Mohawk','Neat','Shaggy','Pixie'],
@@ -758,7 +763,7 @@ function sanSlot(s){
     own:{outfit:Array.isArray(s.own&&s.own.outfit)?s.own.outfit:OUTFITS.map((o,i)=>o.price===0?i:-1).filter(i=>i>=0),
          hat:Array.isArray(s.own&&s.own.hat)?s.own.hat:HATLIST.filter(h=>HAT_PRICE[h]===0),
          pet:Array.isArray(s.own&&s.own.pet)?s.own.pet:[0]},
-    prog:{stars:Object.assign({},s.prog&&s.prog.stars),done:Array.isArray(s.prog&&s.prog.done)?s.prog.done:[]},
+    prog:{stars:Object.assign({},s.prog&&s.prog.stars),done:Array.isArray(s.prog&&s.prog.done)?s.prog.done:[],friends:Array.isArray(s.prog&&s.prog.friends)?s.prog.friends.filter(x=>typeof x==='string').slice(0,40):[]},
     miss:Object.assign({},s.miss),plays:s.plays|0};
 }
 function newSlot(name,lvl,look){
@@ -1247,17 +1252,29 @@ function initScenes(){
   G.homeObj=buildHome();scene.add(G.homeObj.g);
   G.chase=buildChase();scene.add(G.chase.g);
   G.chaseT=buildTitan(Object.assign({},TITANS.tunas,{s:.85}));G.chaseT.root.rotation.y=Math.PI/2;G.chase.g.add(G.chaseT.root);
-  G.pals=[buildMonster('bunny',1.0),buildMonster('sprout',.95),buildMonster('shroom',.9)];
-  [[-2.8,-2.6],[3.7,-3.2],[-5.2,-.4]].forEach((p,i)=>{const m=G.pals[i];m.root.position.set(p[0],0,p[1]);m.root.rotation.y=i?-.6:.8;scene.add(m.root);});
+  G.pals=[];G.palSig='';
   G.parent=null;
   rebuildHero(G.defaultLook);
 }
+function rebuildPals(){
+  const fr=(G.slot&&G.slot.prog.friends)||[],sig=G.si+':'+fr.join(',');if(sig===G.palSig)return;G.palSig=sig;
+  (G.pals||[]).forEach(m=>{scene.remove(m.root);disposeGroup(m.root);});G.pals=[];
+  const MS=[[-2.1,-.7],[2.2,-1.1],[-2.7,-2.7],[2.9,-3.0],[-1.0,-4.3],[1.5,-4.8],[-3.3,-5.2],[3.5,-5.6]];
+  const TS=[[-3.1,-8.5],[3.5,-9.2],[.2,-12]];
+  let mi=0,ti=0;
+  fr.forEach(k=>{
+    if(MONDEF[k]){const p=MS[mi++%MS.length];const m=buildMonster(k,.85);m.root.position.set(p[0],0,p[1]);m.root.rotation.y=p[0]<0?.7:-.7;m.star.visible=false;scene.add(m.root);G.pals.push(m);}
+    else if(TITANS[k]){const p=TS[ti++%TS.length];const T=buildTitan(Object.assign({},TITANS[k],{s:.55}));T.root.position.set(p[0],0,p[1]);T.root.rotation.y=p[0]<0?.5:-.5;T.wave=1;T.star.visible=false;scene.add(T.root);G.pals.push(T);}
+  });
+  if(G.mode)setVisible(G.mode);
+}
+function addFriend(k){const f=G.slot.prog.friends;if(f.includes(k))return false;f.push(k);saveDB();return true;}
 function setVisible(mode){
   const home=mode==='title'||mode==='slots'||mode==='home'||mode==='edit';
   const play=mode==='play'||mode==='duel'||mode==='result';
   const chase=mode==='title'||mode==='slots';
   G.homeObj.g.visible=mode==='home'||mode==='edit'||mode==='parent';G.chase.g.visible=chase;G.pals.forEach(m=>m.root.visible=mode==='home'||mode==='edit'||mode==='parent');if(G.parent)G.parent.root.visible=mode==='home'||mode==='parent'||mode==='play'||mode==='duel'||mode==='result';
-  if(G.world)G.world.g.visible=play;G.titans.forEach(T=>{if(!T.gone)T.root.visible=play;});
+  if(G.world)G.world.g.visible=play;G.titans.forEach(T=>{if(!T.gone||T.follow)T.root.visible=play;});
   if(G.mapObj)G.mapObj.g.visible=mode==='map';
   const showHero=home||play||mode==='map'||mode==='parent';G.hero.root.visible=showHero;if(G.petM)G.petM.root.visible=showHero;
   ensureSun();SUN.visible=play&&!!G.world;
@@ -1515,6 +1532,7 @@ function renderParent(){
 $('#pc-cheer').innerHTML=['👏','⭐','❤️','🎉'].map(e=>'<button data-e="'+e+'">'+e+'</button>').join('');
 $('#pc-cheer').querySelectorAll('button').forEach(b=>b.onclick=()=>{csend(COOP.conn,{t:'cheer',e:b.dataset.e});G.parentWave=1;SFX.tap();});
 function goHome(){
+  rebuildPals();
   G.hero.root.scale.setScalar(1);
   setMode('home');showScreen('s-home');EZUI.hide('d-style');G.edit=null;
   refreshHomeHud();heroHome();homeCam();
@@ -1786,7 +1804,7 @@ function updateDuel(dt){
     G.atkT+=dt/.75;
     if(G.atkT>=.55&&!G.atkSpawned){
       G.atkSpawned=true;
-      const m=new THREE.Mesh(new THREE.BoxGeometry(.5,.5,.5),new THREE.MeshBasicMaterial({color:0xffe45a}));
+      const m=makeApple();
       const from=new THREE.Vector3(G.hx+1.2,2.6,0),to=new THREE.Vector3();foeTarget(T,to);
       m.position.copy(from);scene.add(m);G.proj={m,from,to,t:0};
     }
@@ -1812,9 +1830,7 @@ function updateDuel(dt){
   }
   if(G.hurt>0)G.hurt=Math.max(0,G.hurt-dt*1.6);
   if(D.state==='faint'){D.t+=dt;if(D.t>2){G.faint=false;D.hearts=3;D.state='wait';renderDuelHud();SFX.ok();setTimeout(nextQ,400);}}
-  if(D.state==='win'){D.t+=dt;if(T.dying)T.defeat=Math.min(1,T.defeat+dt*(T.isMon?1.1:.7));
-    if(T.isMon&&T.defeat>=1&&!T.puffed){T.puffed=true;const p=new THREE.Vector3();T.root.getWorldPosition(p);burst(p.x,p.y+1,p.z,['#ffffff','#e8ecf8','#cfd8f0'],24,3.2,.9,-1,.5);}
-   if(D.t>2.6){endDuel();return;}}
+  if(D.state==='win'){D.t+=dt;if(D.t>2.6){endDuel();return;}}
   if(G.cheer>0)G.cheer=Math.max(0,G.cheer-dt*.8);
   placeHero(dt,{moving:false});
   camTo.apply(null,D.cam.concat([6]));
@@ -1823,20 +1839,25 @@ function foeTarget(T,out){
   if(T.isMon){const p=new THREE.Vector3();T.root.getWorldPosition(p);out.set(p.x,p.y+T.def.h*.55*T.baseS+(T.g.position.y||0),p.z);return out;}
   return titanStarWorld(T,out);
 }
+function makeApple(){
+  const g=new THREE.Group(),bx=(w,h,d,c,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color:c,emissive:c,emissiveIntensity:.18}));m.position.set(x,y,z);g.add(m);return m;};
+  bx(.62,.5,.62,0xe0352f,0,0,0);bx(.5,.18,.5,0xc12822,0,-.3,0);bx(.5,.16,.5,0xf0584c,0,.3,0);bx(.08,.2,.08,0x6b4423,0,.5,0);bx(.26,.1,.14,0x5ec24a,.16,.5,0);
+  g.scale.setScalar(1.15);return g;
+}
 function titanHit(){
   const D=G.D,T=D.T;T.hit=1;T.flash=1;SFX.hit();CAM.shake=.35;fxFlash('hit');
-  const p=new THREE.Vector3();foeTarget(T,p);burst(p.x,p.y,p.z,['#ffe45a','#ff9a2a','#fff'],22,6,.7,10,.2);
+  const p=new THREE.Vector3();foeTarget(T,p);burst(p.x,p.y,p.z,['#e0352f','#ff7a6a','#fff3d0','#5ec24a'],18,4.5,.7,6,.16);
   const dmg=COOP.buff.power?2:1;COOP.buff.power=false;D.hp=Math.max(0,D.hp-dmg);renderDuelHud();floatMsg(dmg>1?'⚡ '+t('hit'):t('hit'));
   if(D.hp<=0){
-    D.state='win';D.t=0;T.dying=true;T.happy=1;G.cheer=1;
-    SFX.win();winFx(T,T.boss?25:8);
-    const bonus=T.boss?25:8;G.slot.coins+=bonus;G.runCoins+=bonus;saveDB();
+    D.state='win';D.t=0;T.tame=true;T.star.visible=false;T.happy=1;G.cheer=1;
+    SFX.win();const bonus=T.boss?25:8;winFx(T,bonus,addFriend(T.dkey)?nameOf('titan',T.dkey):'');
+    G.slot.coins+=bonus;G.runCoins+=bonus;saveDB();
   }else{D.state='wait';setTimeout(nextQ,800);}
 }
 /* ---------- victory fx ---------- */
 const FXS=[];
 function winPop(main,sub){const g=$('#game');[[main,''],[sub,' sub']].forEach(a=>{if(!a[0])return;const e=document.createElement('div');e.className='winpop'+a[1];e.textContent=a[0];g.appendChild(e);setTimeout(()=>e.remove(),1900);});}
-function winFx(T,bonus){
+function winFx(T,bonus,friend){
   const p=new THREE.Vector3();T.root.getWorldPosition(p);const cy=T.isMon?1.6:4.2;
   // shockwave rings
   [0,.18].forEach((dl,i)=>{const m=new THREE.Mesh(new THREE.RingGeometry(.8,1.1,28),new THREE.MeshBasicMaterial({color:i?0xffffff:0xffe45a,transparent:true,opacity:.9,side:THREE.DoubleSide,depthWrite:false}));
@@ -1849,7 +1870,8 @@ function winFx(T,bonus){
   for(let i=0;i<n;i++){const m=new THREE.Mesh(new THREE.BoxGeometry(.42,.42,.12),new THREE.MeshBasicMaterial({color:0xffd23a}));
     m.position.set(p.x,p.y+cy,p.z);m.visible=false;scene.add(m);
     FXS.push({k:'coin',m,t:-.25-i*.09,from:new THREE.Vector3(p.x,p.y+cy,p.z),vx:(Math.random()-.5)*2.4,vz:(Math.random()-.5)*1.6,lift:2+Math.random()*1.4});}
-  winPop(t(T.isMon?'winMon':'titanDown'),'+'+bonus+' 🪙');
+  burst(p.x,p.y+cy,p.z,['#ff8fb0','#ff5c8a','#ffffff'],16,3.2,1.1,3,.22);
+  winPop(t(T.isMon?'winMon':'titanDown'),'+'+bonus+' 🪙'+(friend?'  ·  🤝 '+friend:''));
   G.cheer=1;
 }
 function fxTick(dt){
@@ -1861,8 +1883,17 @@ function fxTick(dt){
       if(u>=1){burst(tx,ty,0,['#ffd84a','#fff3a0'],6,2.6,.4,4,.1);SFX.coin();scene.remove(o.m);o.m.geometry.dispose();o.m.material.dispose();FXS.splice(i,1);}}
   }
 }
+function updateFollowers(dt){
+  const k=1-Math.exp(-dt*3.2);
+  G.titans.filter(T=>T.follow).forEach((T,i)=>{
+    const R=T.root,tx=G.hx-3.1-i*1.7,tz=i%2?-.5:.9;
+    R.position.x+=(tx-R.position.x)*k;R.position.z+=(tz-R.position.z)*k;R.position.y=0;
+    R.rotation.y=Math.PI/2;R.scale.setScalar(R.scale.x+(.5-R.scale.x)*k);
+    if(G.cheer>0&&G.mode!=='duel')T.happy=1;else if(G.mode!=='duel')T.happy=0;
+  });
+}
 function endDuel(){
-  const T=G.D.T;T.happy=1;if(T.isMon){T.root.visible=false;T.gone=true;}G.D=null;G.hero.root.scale.setScalar(1);VPW=1;
+  const T=G.D.T;if(T.isMon){T.follow=true;T.happy=0;T.fk=G.titans.filter(x=>x.follow).length-1;}else T.happy=1;G.D=null;G.hero.root.scale.setScalar(1);VPW=1;
   G.tIdx++;
   if(G.tIdx>=G.titans.length){$('#duelPanel').classList.remove('show','lockq','flip','walk');stageClear();return;}
   {const P=$('#duelPanel');P.classList.remove('flip','lockq');P.classList.add('walk');}G.go=false;setWalkUI();
@@ -1980,7 +2011,7 @@ function updateIdle(dt){
   animKid(G.hero,{moving:false,wave:m==='title',atk:-1,hurt:0,cheer:0,faint:false},dt,TT);
   if(G.petM)petAnim(G.petM,false,TT);
   G.homeObj.clouds.forEach(c=>{c.g.position.x=((c.x0+TT*c.sp+20)%44)-20;});
-  G.pals.forEach(p=>animMonster(p,dt,TT));
+  G.pals.forEach(p=>animFoe(p,dt,TT));
   if(G.parent){animKid(G.parent,{moving:false,wave:G.parentWave>0,atk:-1,hurt:0,cheer:G.parentWave>0?0:0,faint:false},dt,TT);G.parentWave=Math.max(0,(G.parentWave||0)-dt);}
   if(m==='title'||m==='slots')updateChase(dt);
 }
@@ -1994,7 +2025,8 @@ function frame(now){
     else if(m==='result'){placeHero(dt,{moving:false});}
     else if(m==='map'&&G.mapObj){animKid(G.hero,{moving:false,wave:true,atk:-1,hurt:0,cheer:0,faint:false},dt,TT);if(G.petM)petAnim(G.petM,false,TT);G.mapObj.titans.forEach(T=>animTitan(T,dt,TT));G.mapObj.clouds.forEach(c=>{c.g.position.x=c.x0+Math.sin(TT*c.sp)*3;});}
     else if(m==='title'||m==='slots'||m==='home'||m==='edit'||m==='parent')updateIdle(dt);
-    G.titans.forEach(T=>{if(T.dying&&T.defeat<1&&m!=='duel')T.defeat=Math.min(1,T.defeat+dt*.7);animFoe(T,dt,TT);});
+    if(m==='play'||m==='duel'||m==='result')updateFollowers(dt);
+    G.titans.forEach(T=>animFoe(T,dt,TT));
     if(G.world){G.world.clouds.forEach(c=>{c.g.position.x=c.x0+Math.sin(TT*c.sp)*3;});G.world.pol.forEach(o=>{o.m.position.y=o.y+Math.sin(TT*1.3+o.ph)*.35;o.m.position.x=o.x+Math.sin(TT*.7+o.ph)*.5;});}
     sunFollow(m==='play'||m==='duel'||m==='result'?G.hx:0,0);
     partTick(dt);fxTick(dt);
@@ -2026,7 +2058,7 @@ function frame(now){
   LANG=DB.lang||((navigator.language||'id').toLowerCase().startsWith('id')?'id':'en');
   AU.muted=!!DB.muted;
   initScenes();engInit();applyLang();$('#b-mute').textContent=AU.muted?'🔇':'🔊';$('#b-mute2').textContent=AU.muted?'🔇':'🔊';
-  $('#ver').textContent='prototype v1.0';
+  $('#ver').textContent='prototype v1.1';
   addEventListener('resize',()=>{if($('#s-map').classList.contains('show'))openMap();});
   if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
   goTitle();

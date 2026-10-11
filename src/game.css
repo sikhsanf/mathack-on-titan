@@ -283,3 +283,8 @@ input.txt{font:700 18px var(--f-body);padding:10px 14px;border-radius:14px;borde
 .jnacc button.on{background:var(--sun)}
 .jnerr{color:#c0392b;font:800 14px var(--f-display);min-height:1.2em;margin-top:6px}
 input.code{text-transform:uppercase;letter-spacing:.3em;text-align:center;font:800 24px var(--f-display)}
+
+/* apple hunger bar: red = still hungry, grey = eaten */
+.foehp i{width:20px!important;height:18px!important;border-radius:48% 48% 42% 42%!important;border:2px solid var(--ink)!important;background:#ddd6ea!important;position:relative}
+.foehp i.on{background:#e8403a!important}
+.foehp i.on::after{content:"";position:absolute;left:50%;top:-6px;width:4px;height:6px;margin-left:-2px;background:#5a3a1c;border-radius:2px}
