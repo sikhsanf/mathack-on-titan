@@ -298,3 +298,4 @@ input.code{text-transform:uppercase;letter-spacing:.3em;text-align:center;font:8
 .gwho{display:flex;gap:10px;justify-content:center;margin-bottom:10px}
 .gwho button{flex:1;pointer-events:auto;border:3px solid var(--ink);border-radius:16px;background:#fff;padding:10px 6px;font:800 clamp(16px,4vmin,22px) var(--f-display);color:var(--ink);box-shadow:0 3px 0 var(--ink)}
 .gwho button.on{background:#ffe45a;transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.gwho button:disabled{opacity:.4;box-shadow:none}

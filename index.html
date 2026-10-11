@@ -364,6 +364,7 @@ input.code{text-transform:uppercase;letter-spacing:.3em;text-align:center;font:8
 .gwho{display:flex;gap:10px;justify-content:center;margin-bottom:10px}
 .gwho button{flex:1;pointer-events:auto;border:3px solid var(--ink);border-radius:16px;background:#fff;padding:10px 6px;font:800 clamp(16px,4vmin,22px) var(--f-display);color:var(--ink);box-shadow:0 3px 0 var(--ink)}
 .gwho button.on{background:#ffe45a;transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.gwho button:disabled{opacity:.4;box-shadow:none}
 </style></head><body><div id="game">
   <canvas id="cv"></canvas>
   <div id="pal-bubble"></div>
@@ -1359,6 +1360,7 @@ function mkCode0(){let s='';for(let i=0;i<5;i++)s+=CODE_AL[Math.floor(Math.rando
 function csend(c,o){if(c&&c.open){try{c.send(o);}catch(e){}}}
 function parentLook(ic){const dad=ic==='👨';return {g:dad?0:1,skin:1,hair:0,hs:dad?0:2,outfit:dad?1:3,hat:0,pet:0};}
 function mkCode(){let c=lsG('mx_cocode');if(!/^[A-Z0-9]{5}$/.test(c)){c=mkCode0();lsS('mx_cocode',c);}return c;}
+function roleLbl(ic){return ic==='👨'?t('gDad'):t('gMom');}
 function resetPerks(){COOP.perks=Object.assign({},PERK_MAX);COOP.buff={power:false,shield:false};}
 /* --- host side (child phone) --- */
 function coopHostStart(tries){
@@ -1471,7 +1473,7 @@ function renderJoin(){
   if(!DB.parents.length){b.innerHTML='<div class="mono">'+t('jnNone')+'</div><div style="margin-top:12px"><button class="pill go" id="jn-make">+ '+t('jnMake')+'</button></div>';ok.style.display='none';$('#jn-make').onclick=()=>{const left=Math.ceil((GATE.lockUntil-Date.now())/1000);openGate(left>0?left:0);};return;}
   ok.style.display='';if(JN.sel>=DB.parents.length)JN.sel=0;
   const keepCode=$('#jn-code')?$('#jn-code').value:'';
-  b.innerHTML='<div class="mono">'+t('jnWho')+'</div><div class="jnacc">'+DB.parents.map((p,i)=>'<button data-i="'+i+'" class="'+(i===JN.sel?'on':'')+'">'+(p.ic||'👩')+' <span></span></button>').join('')+'</div>'
+  b.innerHTML='<div class="mono">'+t('jnWho')+'</div><div class="jnacc">'+DB.parents.map((p,i)=>'<button data-i="'+i+'" class="'+(i===JN.sel?'on':'')+'">'+(p.ic||'👩')+' '+roleLbl(p.ic)+' · <span></span></button>').join('')+'</div>'
    +'<div class="mono" style="margin-top:6px">'+t('jnGate')+'</div><div class="gq" id="jn-q" style="font:800 26px var(--f-display);margin:6px 0">'+genGate()+'</div><input class="txt" id="jn-a" inputmode="numeric" placeholder="'+t('gAns')+'">'
    +'<div class="mono" style="margin-top:10px">'+t('jnCode')+'</div><input class="txt code" id="jn-code" maxlength="5" autocapitalize="characters" autocomplete="off" placeholder="•••••"><div class="jnerr" id="jn-err"></div>';
   b.querySelectorAll('.jnacc button').forEach((e,i)=>{e.querySelector('span').textContent=DB.parents[i].name;e.onclick=()=>{JN.sel=i;b.querySelectorAll('.jnacc button').forEach((x,j)=>x.classList.toggle('on',j===i));};});
@@ -2074,7 +2076,7 @@ function genGate(){
 }
 function renderParents(){
   const b=$('#pr-body');
-  b.innerHTML=(DB.parents.length?DB.parents.map(p=>'<div class="row"><span class="badge">'+(p.ic||'👩')+' <b></b></span></div>').join(''):'<div class="mono">'+t('pEmpty')+'</div>')+'<div class="mono" style="margin-top:10px;font-size:14px;opacity:.8">'+t('pSoon')+'</div>';
+  b.innerHTML=(DB.parents.length?DB.parents.map(p=>'<div class="row"><span class="badge">'+(p.ic||'👩')+' '+roleLbl(p.ic)+' · <b></b></span></div>').join(''):'<div class="mono">'+t('pEmpty')+'</div>')+'<div class="mono" style="margin-top:10px;font-size:14px;opacity:.8">'+t('pSoon')+'</div>';
   b.querySelectorAll('b').forEach((e,i)=>{e.textContent=DB.parents[i].name;});
   $('#pr-add').style.display=DB.parents.length>=2?'none':'';
 }
@@ -2090,9 +2092,10 @@ function openGate(lock){
   if(lock>0){b.innerHTML='<div class="mono">'+t('gWait').replace('{n}',lock)+'</div>';$('#g-ok').style.display='none';}
   else{
     $('#g-ok').style.display='';
-    b.innerHTML='<div class="mono" style="margin-bottom:8px">'+t('gBody')+'</div><div class="row gwho" id="g-who"><button type="button" data-ic="👩" class="on">👩 '+t('gMom')+'</button><button type="button" data-ic="👨">👨 '+t('gDad')+'</button></div><div class="row"><label>'+t('name')+'</label><input class="txt" id="g-name" maxlength="12" placeholder="'+t('gName')+'"></div><div class="gq" id="g-q" style="font:800 clamp(24px,6vmin,38px) var(--f-display);text-align:center;margin:10px 0">'+genGate()+'</div><div class="row"><label>'+t('gAns')+'</label><input class="txt" id="g-a" inputmode="numeric" pattern="[0-9]*" autocomplete="off"></div>';
+    b.innerHTML='<div class="mono" style="margin-bottom:8px">'+t('gBody')+'</div><div class="row gwho" id="g-who"><button type="button" data-ic="👩"'+(DB.parents.some(p=>p.ic==='👩')?' disabled':'')+'>👩 '+t('gMom')+'</button><button type="button" data-ic="👨"'+(DB.parents.some(p=>p.ic==='👨')?' disabled':'')+'>👨 '+t('gDad')+'</button></div><div class="row"><label>'+t('name')+'</label><input class="txt" id="g-name" maxlength="12" placeholder="'+t('gName')+'"></div><div class="gq" id="g-q" style="font:800 clamp(24px,6vmin,38px) var(--f-display);text-align:center;margin:10px 0">'+genGate()+'</div><div class="row"><label>'+t('gAns')+'</label><input class="txt" id="g-a" inputmode="numeric" pattern="[0-9]*" autocomplete="off"></div>';
   }
-  b.querySelectorAll('#g-who button').forEach(x=>x.onclick=()=>{SFX.tap();b.querySelectorAll('#g-who button').forEach(y=>y.classList.toggle('on',y===x));});
+  {const bs=[...b.querySelectorAll('#g-who button')];const f=bs.find(x=>!x.disabled);if(f)f.classList.add('on');}
+  b.querySelectorAll('#g-who button').forEach(x=>x.onclick=()=>{if(x.disabled)return;SFX.tap();b.querySelectorAll('#g-who button').forEach(y=>y.classList.toggle('on',y===x));});
   EZUI.show('d-gate');
 }
 $('#g-x').onclick=$('#g-cancel').onclick=()=>EZUI.hide('d-gate');
