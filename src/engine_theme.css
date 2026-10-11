@@ -2,7 +2,8 @@
 html.embed{--pen:#2f3a73;--pencil:#58608a;--blue:#2457c5;--crayon:#ffe27a;--good:#2e9e5b;--bad:#e5484d;--ink:#2f3a73;--k:#2457c5;--k-dark:#1c449c;--gold:#ffc83a;--purple:#7b5bd6;--shadow:none;--wob:255px 16px 225px 16px/16px 225px 16px 255px}
 .embed body{font-family:'Patrick Hand','Baloo 2','Comic Sans MS',cursive,sans-serif;color:var(--pen);-webkit-user-select:none;user-select:none;font-size:18px}
 .embed .page-card{padding:2px 8px 10px !important}
-.embed .page-instr{display:block;width:fit-content;max-width:96%;margin:0 auto 4px !important;background:linear-gradient(transparent 58%,rgba(255,226,122,.9) 58% 90%,transparent 90%);border:0;box-shadow:none;padding:0 8px;font:400 clamp(1.2rem,5.2vw,1.5rem)/1.2 'Patrick Hand','Baloo 2',cursive !important;color:var(--pen);text-align:center}
+.embed .page-instr .hl{background:linear-gradient(transparent 58%,rgba(255,226,122,.9) 58% 90%,transparent 90%);-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:0 6px}
+.embed .page-instr{display:block;width:auto;max-width:96%;margin:0 auto 4px !important;background:none;border:0;box-shadow:none;padding:0 8px;font:400 clamp(1.2rem,5.2vw,1.5rem)/1.2 'Patrick Hand','Baloo 2',cursive !important;color:var(--pen);text-align:center}
 .embed .stage-area{gap:8px !important;margin-top:2px !important}
 .embed .item-visual-emoji,.embed .eq-sentence{font-family:'Patrick Hand','Baloo 2',cursive}
 /* paper cut-out keys & choices */
@@ -53,3 +54,7 @@ html.embed{--pen:#2f3a73;--pencil:#58608a;--blue:#2457c5;--crayon:#ffe27a;--good
 .embed .pairw svg line{stroke:var(--blue);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:200;stroke-dashoffset:200;animation:pdraw .25s forwards}
 @keyframes pdraw{to{stroke-dashoffset:0}}
 .embed .pairhint{font:400 1.05rem 'Patrick Hand',cursive;color:var(--pencil)}
+
+html.embed #app{min-height:0 !important}
+.embed .tenframe{width:min(100%,380px) !important;margin-inline:auto !important}
+.embed .stage-area{align-items:center}

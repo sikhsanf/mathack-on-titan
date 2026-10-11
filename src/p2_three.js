@@ -5,8 +5,13 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
 renderer.outputEncoding=THREE.sRGBEncoding;
 const scene=new THREE.Scene();
 const cam=new THREE.PerspectiveCamera(38,1.8,.1,300);
-scene.add(new THREE.HemisphereLight(0xffffff,0x8fb870,.95));
-const sun=new THREE.DirectionalLight(0xffffff,.65);sun.position.set(-6,14,10);scene.add(sun);
+scene.add(new THREE.HemisphereLight(0xffffff,0x8f9ab8,.6));
+const sun=new THREE.DirectionalLight(0xfff0d0,.62);sun.position.set(-12,22,14);scene.add(sun);scene.add(sun.target);
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);const sc_=sun.shadow.camera;sc_.left=-16;sc_.right=16;sc_.top=16;sc_.bottom=-16;sc_.near=1;sc_.far=70;sun.shadow.bias=-.0006;sun.shadow.normalBias=.04;
+let _shN=0;
+function shadowSweep(){scene.traverse(o=>{if(o.isMesh&&!o.userData.sh){o.userData.sh=1;if(o.material&&!o.material.isMeshBasicMaterial){o.updateWorldMatrix(true,false);o.castShadow=o.matrixWorld.elements[13]<7;o.receiveShadow=true;}}});}
+function sunFollow(x,z){sun.target.position.set(x,0,z||0);sun.position.set(x-12,22,(z||0)+14);if(++_shN%20===1)shadowSweep();}
 
 const CAM={p:new THREE.Vector3(0,3,12),l:new THREE.Vector3(0,2,0),tp:new THREE.Vector3(0,3,12),tl:new THREE.Vector3(0,2,0),k:4,shake:0};
 function camTo(px,py,pz,lx,ly,lz,k,snap){CAM.tp.set(px,py,pz);CAM.tl.set(lx,ly,lz);CAM.k=k||4;if(snap){CAM.p.copy(CAM.tp);CAM.l.copy(CAM.tl);}}

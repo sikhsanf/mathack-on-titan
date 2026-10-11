@@ -82,8 +82,8 @@ function setVisible(mode){
   if(G.mapObj)G.mapObj.g.visible=mode==='map';
   const showHero=home||play||mode==='map';G.hero.root.visible=showHero;if(G.petM)G.petM.root.visible=showHero;
   ensureSun();SUN.visible=play&&!!G.world;
-  scene.background=play&&G.world?skyTex('#7fcbff',STAGES[G.stageIdx].fog):skyTex('#8fd0ff','#e6f7ff');
-  scene.fog=play&&G.world?new THREE.Fog(STAGES[G.stageIdx].fog,45,130):new THREE.Fog('#d6f1ff',40,100);
+  scene.background=play&&G.world?skyTex('#6fb0df',STAGES[G.stageIdx].fog):skyTex('#86bde6','#d8ecf5');
+  scene.fog=play&&G.world?new THREE.Fog(STAGES[G.stageIdx].fog,45,130):new THREE.Fog('#cfe3ee',40,100);
 }
 function setMode(m){
   G.mode=m;setVisible(m);
@@ -209,7 +209,7 @@ function gridHTML(){
   const ed=G.edit,S=slotRef(),L=ed.look;let h='';
   const card=(kind,id,inner,own,price,on)=>'<div class="ccard'+(on?' on':'')+(own?'':' lock')+'" data-k="'+kind+'" data-id="'+id+'">'+inner+(own?'':'<span class="pr">🪙'+price+'</span>')+'</div>';
   const im=(k,i)=>'<img class="th" alt="" src="'+thumb(k,i,L)+'">';
-  if(ed.tab==='hair')for(let i=0;i<HAIR_STYLES;i++)h+=card('hs',i,im('hs',i),true,0,L.hs===i);
+  if(ed.tab==='hair')HSG[L.g?1:0].forEach(i=>{h+=card('hs',i,im('hs',i)+'<span>'+(TX[LANG].hsNames[i]||'')+'</span>',true,0,L.hs===i);});
   else if(ed.tab==='hairc')for(let i=0;i<HAIR_COLORS;i++)h+=card('hair',i,'<div class="sw" style="background:'+HAIR[i]+'"></div>',true,0,L.hair===i);
   else if(ed.tab==='skin')for(let i=0;i<SKINS;i++)h+=card('skin',i,'<div class="sw" style="background:'+SKIN[i]+'"></div>',true,0,L.skin===i);
   else if(ed.tab==='shirt')OUTFITS.forEach((o,i)=>{h+=card('outfit',i,im('outfit',i)+'<span>'+nameOf('out',i)+'</span>',S.own.outfit.includes(i),o.price,L.outfit===i);});
@@ -240,7 +240,7 @@ $('#st-body').addEventListener('click',e=>{
   if(!G.edit)return;SFX.tap();
   const tab=e.target.closest('[data-tab]');if(tab){G.edit.tab=tab.dataset.tab;renderStyle(false);return;}
   const c=e.target.closest('.ccard');if(c){const k=c.dataset.k,id=+c.dataset.id;equip(k,id);return;}
-  const sg=e.target.closest('#sg-g button');if(sg){G.edit.look.g=+sg.dataset.v;rebuildHero(G.edit.look);camStyle();renderStyle(true);return;}
+  const sg=e.target.closest('#sg-g button');if(sg){G.edit.look.g=+sg.dataset.v;G.edit.look.hs=G.edit.look.g?2:0;G.edit.look.hat=G.edit.look.hat;rebuildHero(G.edit.look);camStyle();renderStyle(true);return;}
   const sl=e.target.closest('#sg-l button');if(sl){G.edit.tmp.lvl=sl.dataset.v;renderStyle(true);return;}
 });
 
@@ -293,7 +293,7 @@ function startStage(i){
   clearWorld();G.stageIdx=i;const st=STAGES[i];
   G.world=buildWorld(st);scene.add(G.world.g);
   st.titans.forEach((tt,k)=>{
-    const T=buildTitan(Object.assign({},TITANS[tt.d]));T.root.position.set(tt.x,0,0);T.root.rotation.y=-Math.PI/2;T.x=tt.x;T.q=tt.q;T.gone=false;T.boss=!!TITANS[tt.d].boss;T.dkey=tt.d;T.dying=false;scene.add(T.root);G.titans.push(T);
+    const T=tt.m?buildMonster(tt.d,1.7):buildTitan(Object.assign({},TITANS[tt.d]));T.root.position.set(tt.x,0,0);T.root.rotation.y=-Math.PI/2;T.x=tt.x;T.q=tt.q;T.gone=false;T.boss=!tt.m&&!!TITANS[tt.d].boss;T.dkey=tt.d;T.dying=false;scene.add(T.root);G.titans.push(T);
   });
   G.tIdx=0;G.hx=0;G.hy=0;G.hvy=0;G.onGround=true;G.jumpReq=false;G.walking=true;G.paused=false;G.D=null;
   G.atkT=-1;G.hurt=0;G.faint=false;G.cheer=0;G.runCoins=0;G.runWrong=0;G.runRight=0;VPW=1;
@@ -345,11 +345,11 @@ function startDuel(){
   setMode('duel');showScreen('s-duel');VPW=1;
   $('#d-tname').textContent=nameOf('titan',T.dkey);renderDuelHud();
   T.wave=0;T.root.rotation.y=-.95;
-  const s=T.baseS,hN=6.6*s+1.2,asp=1;
-  G.D.cam=[G.hx+2.9,hN*.44,Math.max(18,hN*2.0),G.hx+2.9,hN*.4,0];
+  const s=T.baseS,hN=T.isMon?3.3*s+1.6:6.6*s+1.2;
+  G.D.cam=T.isMon?[G.hx+2.6,hN*.42,Math.max(13,hN*2.1),G.hx+2.6,hN*.38,0]:[G.hx+2.9,hN*.44,Math.max(18,hN*2.0),G.hx+2.9,hN*.4,0];
   syncPanel(true);
   const P=$('#duelPanel');P.classList.remove('show');P.classList.add('lockq');
-  floatMsg(t('tipTitan').split('!')[0]+'!');
+  floatMsg(T.isMon?t('monAppear'):t('tipTitan').split('!')[0]+'!');
   setTimeout(()=>{if(!G.D||G.mode!=='duel')return;P.classList.add('show');setTimeout(nextQ,350);},900);
 }
 function syncPanel(on){
@@ -433,12 +433,12 @@ function titanHit(){
   D.hp--;renderDuelHud();floatMsg(t('hit'));
   if(D.hp<=0){
     D.state='win';D.t=0;T.dying=true;T.happy=1;G.cheer=1;
-    setTimeout(()=>{SFX.win();confetti(T.x,3,0);floatMsg(t('titanDown'));},350);
-    const bonus=T.boss?25:10;G.slot.coins+=bonus;G.runCoins+=bonus;saveDB();
+    setTimeout(()=>{SFX.win();confetti(T.x,3,0);floatMsg(t(T.isMon?'monDown':'titanDown'));},350);
+    const bonus=T.boss?25:8;G.slot.coins+=bonus;G.runCoins+=bonus;saveDB();
   }else{D.state='wait';setTimeout(nextQ,800);}
 }
 function endDuel(){
-  const T=G.D.T;T.happy=1;G.D=null;G.hero.root.scale.setScalar(1);$('#duelPanel').classList.remove('show','lockq');VPW=1;
+  const T=G.D.T;T.happy=1;if(T.isMon){T.root.visible=false;T.gone=true;}G.D=null;G.hero.root.scale.setScalar(1);$('#duelPanel').classList.remove('show','lockq');VPW=1;
   G.tIdx++;
   if(G.tIdx>=G.titans.length){stageClear();return;}
   setMode('play');showScreen('s-play');G.walking=true;G.cheer=0;G.faint=false;
@@ -554,8 +554,9 @@ function frame(now){
     else if(m==='result'){placeHero(dt,{moving:false});}
     else if(m==='map'&&G.mapObj){animKid(G.hero,{moving:false,wave:true,atk:-1,hurt:0,cheer:0,faint:false},dt,TT);if(G.petM)petAnim(G.petM,false,TT);G.mapObj.titans.forEach(T=>animTitan(T,dt,TT));G.mapObj.clouds.forEach(c=>{c.g.position.x=c.x0+Math.sin(TT*c.sp)*3;});}
     else if(m==='title'||m==='slots'||m==='home'||m==='edit')updateIdle(dt);
-    G.titans.forEach(T=>{if(T.dying&&T.defeat<1&&m!=='duel')T.defeat=Math.min(1,T.defeat+dt*.7);animTitan(T,dt,TT);});
+    G.titans.forEach(T=>{if(T.dying&&T.defeat<1&&m!=='duel')T.defeat=Math.min(1,T.defeat+dt*.7);animFoe(T,dt,TT);});
     if(G.world){G.world.clouds.forEach(c=>{c.g.position.x=c.x0+Math.sin(TT*c.sp)*3;});G.world.pol.forEach(o=>{o.m.position.y=o.y+Math.sin(TT*1.3+o.ph)*.35;o.m.position.x=o.x+Math.sin(TT*.7+o.ph)*.5;});}
+    sunFollow(m==='play'||m==='duel'||m==='result'?G.hx:0,0);
     partTick(dt);
   }
   if(SUN&&SUN.visible){SUN.position.set(CAM.p.x+30,34,-90);}
@@ -573,7 +574,7 @@ function frame(now){
   cam.aspect=vw/vh;cam.updateProjectionMatrix();
   if(cam.aspect<ref){const f=Math.min(m==='play'?1.6:(m==='map'?2.4:2.6),ref/cam.aspect);cam.position.sub(CAM.l).multiplyScalar(f).add(CAM.l);}
   cam.lookAt(CAM.l);
-  if(vw<W||vh<H){renderer.setScissorTest(false);renderer.setViewport(0,0,W,H);renderer.setClearColor(0xe6f7ff,1);renderer.clear();}
+  if(vw<W||vh<H){renderer.setScissorTest(false);renderer.setViewport(0,0,W,H);renderer.setClearColor(0xd8ecf5,1);renderer.clear();}
   renderer.setScissorTest(true);renderer.setViewport(0,vy,vw,vh);renderer.setScissor(0,vy,vw,vh);
   renderer.render(scene,cam);
   if(m==='map')placeMapNodes();
@@ -585,7 +586,7 @@ function frame(now){
   LANG=DB.lang||((navigator.language||'id').toLowerCase().startsWith('id')?'id':'en');
   AU.muted=!!DB.muted;
   initScenes();engInit();applyLang();$('#b-mute').textContent=AU.muted?'🔇':'🔊';$('#b-mute2').textContent=AU.muted?'🔇':'🔊';
-  $('#ver').textContent='prototype v0.2';
+  $('#ver').textContent='prototype v0.6';
   addEventListener('resize',()=>{if($('#s-map').classList.contains('show'))openMap();});
   if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
   goTitle();

@@ -85,6 +85,18 @@ BRIDGE = r"""
   /* dashed outlines -> soft holes */
   function holify(){ document.querySelectorAll('#stageArea *').forEach(function(el){ if(el.classList.contains('hole')||el.tagName==='svg'||el.closest('svg')) return; var cs=getComputedStyle(el); if(cs.borderTopStyle==='dashed'||cs.borderBottomStyle==='dashed'){ if(parseFloat(cs.borderBottomWidth)>=2 && cs.borderTopStyle==='dashed') el.classList.add('hole'); else el.style.borderBottomColor='var(--ink)'; } }); }
   new MutationObserver(function(){ clearTimeout(holify.h); holify.h=setTimeout(holify,30); }).observe(document.body,{childList:true,subtree:true});
+  /* fit content to the panel: highlighter span + auto zoom + gentle centering */
+  function fit(){
+    var pi=document.getElementById('pageInstr');
+    if(pi && !pi.querySelector('.hl') && pi.textContent.trim()){ pi.innerHTML='<span class="hl">'+pi.innerHTML+'</span>'; }
+    var app=document.getElementById('app'); if(!app) return;
+    document.body.style.zoom=1;
+    var need=Math.max(app.scrollHeight, document.documentElement.scrollHeight), avail=window.innerHeight;
+    if(need>avail+2){ document.body.style.zoom=Math.max(.5, (avail-4)/need); }
+  }
+  var fitT; function fitSoon(){ clearTimeout(fitT); fitT=setTimeout(fit,40); }
+  new MutationObserver(function(){ fitSoon(); }).observe(document.body,{childList:true,subtree:true});
+  window.addEventListener('resize', function(){ setTimeout(fit,60); });
   function post(o){ try{ parent.postMessage(Object.assign({mx:'evt'}, o), '*'); }catch(e){} }
   // the app reports every answer through showFeedback(correct) -> forward it, no banners / next buttons
   showFeedback = function(correct, ctx){ post({type:'result', ok: !!correct}); };
@@ -97,6 +109,7 @@ BRIDGE = r"""
     showScreen('screen-stage');
     try{ renderStagePage(); }catch(e){ post({type:'error', msg:String(e && e.stack || e)}); return; }
     var ha = document.getElementById('stageArea'); if(ha) ha.scrollTop = 0; window.scrollTo(0,0);
+    fit(); setTimeout(fit,120); setTimeout(fit,400); setTimeout(fit,900);
     post({type:'asked', level: level, no: no, idx: idx|0,
           topik: hal.topik, instruksi: hal.instruksiLayar || hal.instruksi,
           cara: hal.cara, aktivitas: hal.aktivitas, konsep: hal.konsep});

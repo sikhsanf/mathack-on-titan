@@ -20,7 +20,7 @@ id:{
  jump:'Lompat',pause:'Jeda',resume:'Lanjut',quit:'Keluar ke Peta',paused:'Jeda',
  hit:'Kena!',miss:'Meleset!',faint:'Aduh, pingsan! Ayo bangun lagi!',great:'Hebat!',
  stageClear:'Stage Selesai!',reward:'Hadiah',stars:'Bintang',again:'Main Lagi',toMap:'Ke Peta',next:'Lanjut',
- petGift:'Pet baru untukmu!',titanDown:'Titan menyerah!',defeated:'sudah jadi teman!',
+ petGift:'Pet baru untukmu!',monAppear:'Monster muncul!',monDown:'Monster kabur!',pickHair:'Model rambut',titanDown:'Titan menyerah!',defeated:'sudah jadi teman!',
  delTitle:'Hapus karakter?',delBody:'Semua kemajuan karakter ini akan hilang.',delete:'Hapus',
  rotate:'Putar HP ke posisi mendatar',
  pTitle:'Menu Orang Tua',pHold:'Tahan ikon gear 1,5 detik',pAccounts:'Akun orang tua',pAdd:'Buat akun orang tua',pEmpty:'Belum ada akun orang tua.',
@@ -30,9 +30,10 @@ id:{
  tipJump:'Tekan Lompat untuk mengambil koin!',tipTitan:'Titan di depan! Jawab soal untuk menyerang!',
  heartsLeft:'Hati',titanHp:'Kekuatan Titan',
  hatNames:{1:'Pita',2:'Topi Biru',3:'Topi Koki',4:'Mahkota Bunga',5:'Telinga Kucing',6:'Telinga Beruang',8:'Helm Akuarium',10:'Topi Jerami',14:'Topi Bebek',15:'Topi Pesta',16:'Mahkota',17:'Helm',18:'Topi Jamur',19:'Topi Naga',20:'Topi Pelangi'},
+ hsNames:['Pendek','Bob','Panjang','Kuncir Kuda','Kuncir Dua','Jabrik','Cepak','Sanggul','Mohawk','Rapi','Gondrong','Pixie'],
  outNames:['Kaos Merah','Kaos Biru','Kaos Hijau','Hoodie Ungu','Bintang Kuning','Garis Pelaut','Overall Jeans','Piyama Bintang','Baju Penjelajah','Baju Pelangi'],
  petNames:['','Kuda','Domba','Beruang','Slime Pelangi','Kucing','Robot','Tupai','Rusa','Rubah'],
- titanNames:{tunas:'Titan Tunas',tulip:'Titan Tulip',matahari:'Titan Matahari',lebah:'Titan Lebah',kupu:'Titan Kupu-kupu',madu:'Titan Madu',jamur:'Titan Jamur',siput:'Titan Siput',raja:'Raja Bunga'}
+ titanNames:{sprout:'Tunas Loncat',jelly:'Jeli Hijau',bee:'Lebah Madu',moth:'Ngengat Bulan',shroom:'Jamur Usil',bunny:'Kelinci Mochi',tunas:'Titan Tunas',tulip:'Titan Tulip',matahari:'Titan Matahari',lebah:'Titan Lebah',kupu:'Titan Kupu-kupu',madu:'Titan Madu',jamur:'Titan Jamur',siput:'Titan Siput',raja:'Raja Bunga'}
 },
 en:{
  tagline:'A math adventure against cute Titans!',play:'Play',slots:'Choose Character',newChar:'New Character',emptySlot:'Empty',
@@ -46,7 +47,7 @@ en:{
  jump:'Jump',pause:'Pause',resume:'Resume',quit:'Back to Map',paused:'Paused',
  hit:'Hit!',miss:'Missed!',faint:'Oops, you fainted! Get up again!',great:'Great!',
  stageClear:'Stage Clear!',reward:'Rewards',stars:'Stars',again:'Play Again',toMap:'To Map',next:'Next',
- petGift:'A new pet for you!',titanDown:'The Titan gives up!',defeated:'is your friend now!',
+ petGift:'A new pet for you!',monAppear:'A monster!',monDown:'The monster ran away!',pickHair:'Hairstyle',titanDown:'The Titan gives up!',defeated:'is your friend now!',
  delTitle:'Delete character?',delBody:'All progress of this character will be lost.',delete:'Delete',
  rotate:'Please rotate your phone to landscape',
  pTitle:'Parent Menu',pHold:'Hold the gear icon for 1.5 seconds',pAccounts:'Parent accounts',pAdd:'Create parent account',pEmpty:'No parent accounts yet.',
@@ -56,9 +57,10 @@ en:{
  tipJump:'Press Jump to grab coins!',tipTitan:'A Titan ahead! Answer questions to attack!',
  heartsLeft:'Hearts',titanHp:'Titan power',
  hatNames:{1:'Ribbon',2:'Blue Cap',3:'Chef Hat',4:'Flower Crown',5:'Cat Ears',6:'Bear Ears',8:'Aquarium Helmet',10:'Straw Hat',14:'Duck Hat',15:'Party Hat',16:'Crown',17:'Helmet',18:'Mushroom Hat',19:'Dragon Hat',20:'Rainbow Hat'},
+ hsNames:['Short','Bob','Long','Ponytail','Twin Tails','Spiky','Buzz','Bun','Mohawk','Neat','Shaggy','Pixie'],
  outNames:['Red Tee','Blue Tee','Green Tee','Purple Hoodie','Yellow Star','Sailor Stripes','Denim Overalls','Star Pajamas','Explorer Vest','Rainbow Tee'],
  petNames:['','Horse','Lamb','Bear','Rainbow Slime','Kitten','Robot','Squirrel','Deer','Fox'],
- titanNames:{tunas:'Sprout Titan',tulip:'Tulip Titan',matahari:'Sunflower Titan',lebah:'Bee Titan',kupu:'Butterfly Titan',madu:'Honey Titan',jamur:'Mushroom Titan',siput:'Snail Titan',raja:'Flower King'}
+ titanNames:{sprout:'Hop Sprout',jelly:'Green Jelly',bee:'Honey Bee',moth:'Lunar Moth',shroom:'Cheeky Shroom',bunny:'Mochi Bunny',tunas:'Sprout Titan',tulip:'Tulip Titan',matahari:'Sunflower Titan',lebah:'Bee Titan',kupu:'Butterfly Titan',madu:'Honey Titan',jamur:'Mushroom Titan',siput:'Snail Titan',raja:'Flower King'}
 }};
 let LANG='id';
 const t=k=>{const v=TX[LANG][k];return v===undefined?(TX.id[k]===undefined?k:TX.id[k]):v;};
@@ -74,7 +76,7 @@ const HATLIST=[0,1,2,3,4,5,6,8,10,14,15,16,17,18,19,20];
 const HAT_PRICE={0:0,1:0,2:0,3:20,4:30,5:30,6:30,8:50,10:20,14:40,15:40,16:80,17:40,18:50,19:70,20:80};
 const PET_ICON=['','🐴','🐑','🐻','🌈','🐱','🤖','🐿️','🦌','🦊'];
 const PET_PRICE=[0,120,120,150,100,0,180,120,150,150];   // kitten (5) = reward of the first boss
-const HAIR_STYLES=12, HAIR_COLORS=5, SKINS=5;
+const HSG=[[0,6,5,8,9,10],[1,2,3,4,7,11]];const HAIR_STYLES=12, HAIR_COLORS=5, SKINS=5;
 const SKIN_NAMES=null;
 
 /* ---------- world 1 ---------- */
@@ -86,12 +88,12 @@ const TITANS={
  jamur:{k:'mushroom',c:'#f2e4d0',b:'#ffffff',s:1.7},siput:{k:'snail',c:'#b8d86a',b:'#f4ffd0',s:1.7},
  raja:{k:'rainbow',c:'#c49bff',b:'#fff0ff',s:2.1,boss:1}};
 const STAGES=[
- {id:1,key:'st1',sky:'#bfe8ff',fog:'#d6f1ff',ground:'#7ed957',dirt:'#9a6b3f',len:100,
-  titans:[{x:32,d:'tunas',q:5},{x:64,d:'tulip',q:5},{x:96,d:'matahari',q:7}],reward:{pet:5}},
- {id:2,key:'st2',sky:'#c8f0ff',fog:'#e2f7ff',ground:'#8fdc55',dirt:'#a0723f',len:100,
-  titans:[{x:32,d:'lebah',q:5},{x:64,d:'kupu',q:5},{x:96,d:'madu',q:7}]},
- {id:3,key:'st3',sky:'#ffe0b8',fog:'#ffeed6',ground:'#6fd06a',dirt:'#8a6038',len:100,
-  titans:[{x:32,d:'jamur',q:6},{x:64,d:'siput',q:6},{x:96,d:'raja',q:8}]}];
+ {id:1,key:'st1',sky:'#6fb4e8',fog:'#cfe4ef',ground:'#62b24a',dirt:'#7d5430',len:100,
+  titans:[{x:32,d:'sprout',m:1,q:4},{x:64,d:'jelly',m:1,q:4},{x:96,d:'matahari',q:7}],reward:{pet:5}},
+ {id:2,key:'st2',sky:'#72bbea',fog:'#d6e9ef',ground:'#74b948',dirt:'#85592f',len:100,
+  titans:[{x:32,d:'bee',m:1,q:4},{x:64,d:'moth',m:1,q:4},{x:96,d:'madu',q:7}]},
+ {id:3,key:'st3',sky:'#e8a46a',fog:'#f2d9b8',ground:'#58a85a',dirt:'#704a2c',len:100,
+  titans:[{x:32,d:'shroom',m:1,q:5},{x:64,d:'bunny',m:1,q:5},{x:96,d:'raja',q:8}]}];
 
 /* ---------- audio (Web Audio only, no files) ---------- */
 const AU={ctx:null,master:null,muted:false,bgmOn:false,timer:null,step:0,kind:'walk'};
