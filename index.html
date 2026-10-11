@@ -2067,9 +2067,9 @@ $('#pa-quit').onclick=()=>{G.paused=false;EZUI.hide('d-pause');saveDB();G.D=null
 const GATE={wrong:0,lockUntil:0,ans:0};
 function genGate(){
   const r=Math.random(),R=(a,b)=>a+((Math.random()*(b-a+1))|0);let q,a;
-  if(r<.34){const x=R(23,89),y=R(6,9),z=R(11,49);q=x+' × '+y+' + '+z+' = ?';a=x*y+z;}
-  else if(r<.67){const x=R(120,480),y=R(35,99),k=R(3,7);q='('+x+' − '+y+') × '+k+' = ?';a=(x-y)*k;}
-  else{const k=R(12,19),n=R(13,29);q=k+' × '+n+' = ?';a=k*n;}
+  if(r<.34){const x=R(12,29),y=R(3,6);q=x+' × '+y+' = ?';a=x*y;}
+  else if(r<.67){const x=R(24,68),y=R(15,39),z=R(11,29);q=x+' + '+y+' + '+z+' = ?';a=x+y+z;}
+  else{const x=R(6,9),y=R(6,9),z=R(11,39);q=x+' × '+y+' + '+z+' = ?';a=x*y+z;}
   GATE.ans=a;return q;
 }
 function renderParents(){
