@@ -43,6 +43,73 @@ EMBED_CSS = EMBED_CSS.replace('</style>', open('/home/claude/mathack/src/engine_
 t = t.replace('</head>', EMBED_CSS + '</head>', 1)
 
 # 4. bridge code, injected inside the app IIFE in place of the splash boot
+
+LOCFIX = r"""
+const EN_PRAK_INSTR = {
+1:"Count all the blocks that match the color you are asked for, then type the total.",
+2:"Count the pictures, then type the matching number (1 or 2).",
+3:"Count the pictures, then type the number (let's learn the number 3).",
+4:"Draw a line from each bunny to a carrot, then tap YES (same amount) or NO.",
+5:"Draw a line from each bunny to a carrot, then tap YES (same amount) or NO.",
+6:"Count the animals in each box (they are scattered, not in a row), then type the number.",
+7:"Count the pictures, then type the number (let's learn the number 4).",
+8:"Count the pictures, then type the number (let's learn the number 5).",
+9:"Count the fruit in each box, then type the number.",
+10:"Take a quick look (don't count one by one) and type the number right away!",
+11:"Is this block the color you were asked for? Tap YES or NO.",
+12:"Count how many blocks of the asked color are in each box.",
+13:"Count how many blocks are NOT cubes.",
+14:"Tap the LONG or SHORT block, as asked.",
+15:"Tap the BIG or SMALL block, as asked.",
+16:"Tap the group with MORE or FEWER, as asked, without counting one by one.",
+17:"Tap the TALL or SHORT block tower, as asked.",
+18:"Count how many CUBES are in each box.",
+19:"Count how many LONG BLOCKS are in each box.",
+20:"Count how many CYLINDERS are in each box.",
+21:"Count all the blocks of the shape you are asked for, then type the total.",
+22:"Look at the color pattern, then tap the next block color.",
+23:"Look at the shape pattern, then write or draw the next shape.",
+24:"Look at the color pattern (3 colors repeating), then write the next color.",
+25:"Tap the thing in the asked position (TOP or BOTTOM).",
+26:"Tap the thing in the asked position (INSIDE or OUTSIDE).",
+27:"Tap the thing in the asked position (FRONT or BEHIND).",
+28:"Compare the 2 block arrangements, then tap YES if EXACTLY THE SAME or NO if different.",
+29:"Type the order of the blocks from SMALLEST to BIGGEST.",
+30:"Finish counting backward."
+};
+const EN_WORDS = {"air":"water","anak":"child","balok":"block","biru":"blue","bola":"ball","kanan":"right","kelereng":"marble","kepala":"head","kiri":"left","kubus":"cube","kucing":"cat","kuning":"yellow","lampu":"lamp","matahari":"sun","meja":"table","merah":"red","nasi":"rice","perahu":"boat","pintu":"door","tabung":"cylinder","tengah":"middle","topi":"hat","uang":"money","anjing":"dog","apel":"apple","bintang laut":"starfish","boneka":"doll","ekor":"tail","ikan":"fish","jendela":"window","jeruk":"orange","karpet":"rug","kepik":"ladybug","kunci":"key","kupu-kupu":"butterfly","lebah":"bee","lemari":"cabinet","pensil":"pencil","pohon":"tree","sedotan":"straw","sendok":"spoon","sepatu":"shoe","stroberi":"strawberry","sungai":"river","tas":"bag","panjang":"long","pendek":"short","besar":"big","kecil":"small","hijau":"green"};
+function enWord(s){
+  if(typeof s!=='string') return s;
+  var k=s.toLowerCase();
+  if(EN_WORDS[k]) return s[0]===s[0].toUpperCase()? EN_WORDS[k].charAt(0).toUpperCase()+EN_WORDS[k].slice(1) : EN_WORDS[k];
+  // "Balok Biru", "Merah-Kubus"
+  var parts=s.split(/([\s-]+)/), changed=false;
+  var out=parts.map(function(p){ var q=p.toLowerCase(); if(EN_WORDS[q]){ changed=true; var w=EN_WORDS[q]; return p[0]===p[0].toUpperCase()? w.charAt(0).toUpperCase()+w.slice(1):w; } return p; });
+  return changed? out.join('') : s;
+}
+function enDeep(o){
+  if(Array.isArray(o)) return o.map(enDeep);
+  if(o && typeof o==='object'){ var r={}; Object.keys(o).forEach(function(k){ r[k]= (k==='label'||k==='nama') ? enWord(o[k]) : enDeep(o[k]); }); return r; }
+  return o;
+}
+function localizeItem(hal,item){
+  var lang=(state.activeProfile && state.activeProfile.lang) || 'id';
+  if(lang==='en' && hal.level==='prak') return enDeep(item);
+  return item;
+}
+function localizeHal(hal){
+  const lang = (state.activeProfile && state.activeProfile.lang) || 'id';
+  if(lang !== 'en') return hal;
+  if(hal.level === 'k'){
+    const override = EN_HALAMAN_OVERRIDES[hal.no];
+    if(override) return Object.assign({}, hal, override);
+  } else if(hal.level === 'prak' && EN_PRAK_INSTR[hal.no]){
+    return Object.assign({}, hal, {instruksi: EN_PRAK_INSTR[hal.no], instruksiLayar: EN_PRAK_INSTR[hal.no]});
+  }
+  return hal;
+}
+"""
+
 BRIDGE = r"""
 
   /* 1-to-1 pairing widget for "Kelinci=3, Wortel=2" (the source app only printed this as text) */
@@ -130,6 +197,10 @@ BRIDGE = r"""
 })();
 """
 assert t.count('\nrunSplash();\n') == 1
+
+i0 = t.index('function localizeHal(hal){'); i1 = t.index('\n}\n', i0)+3
+t = t[:i0] + LOCFIX + t[i1:]
+t = t.replace("const item = hal.items[state.stagePlay.itemIdx];\n\n  document.getElementById('pageTopic')", "const item = localizeItem(hal, hal.items[state.stagePlay.itemIdx]);\n\n  document.getElementById('pageTopic')",1)
 t = t.replace('family=Baloo+2:','family=Patrick+Hand&family=Baloo+2:',1)
 t = t.replace('function mechGenChoice(hal, item, area){','function mechGenChoice0(hal, item, area){',1)
 t = t.replace("if(opts.onTap) opts.onTap();\n    }", "if(opts.onTap) opts.onTap(); else if(opts.dropTargets && opts.dropTargets.length === 1 && opts.onDrop) opts.onDrop(opts.dropTargets[0]);\n    }",1)

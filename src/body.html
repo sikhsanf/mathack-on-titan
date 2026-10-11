@@ -19,8 +19,12 @@
   <section class="ov scr" id="s-home">
     <div class="topl"><div class="hello"><span class="badge" id="h-name"></span><span class="badge coin" id="h-coins"></span></div></div>
     <div class="topr"><button class="chip" id="b-gear">⚙️</button><button class="chip" id="b-mute2">🔊</button></div>
-    <div class="botl"><button class="pill gold big" id="b-style"></button></div>
-    <div class="botr"><button class="pill go big" id="b-go"></button></div>
+    <div class="homecard" id="h-card"><div class="hc-t" id="h-wtitle"></div><div class="hc-bar"><i id="h-wbar"></i></div><div class="hc-s" id="h-wstars"></div></div>
+    <div class="coopbadge" id="h-coop"></div>
+    <div class="homebar">
+      <button class="pill go big" id="b-go"></button>
+      <div class="homerow"><button class="pill gold" id="b-style"></button><button class="pill sea" id="b-coop"></button></div>
+    </div>
   </section>
 
   <div class="ov side" id="d-style"><div class="panel">
@@ -45,10 +49,8 @@
   </section>
 
   <section class="ov scr" id="s-duel">
-    <div class="topl"><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">
-      <div style="display:flex;gap:8px;align-items:center"><button class="chip" id="d-pausebtn">⏸</button><span class="badge" id="d-hearts"></span></div>
-      <div class="tname"><span id="d-tname"></span><div class="hp" id="d-hp"></div></div>
-    </div></div>
+    <div class="topl"><button class="chip" id="d-pausebtn">⏸</button><span class="badge" id="d-hearts"></span></div>
+    <div class="topr foehud"><div class="foename" id="d-tname"></div><div class="foehp hp" id="d-hp"></div></div>
     <div class="float" id="d-float"></div>
   </section>
 
@@ -73,6 +75,12 @@
     <div class="phead"><h2 id="c-title"></h2></div>
     <div class="pbody" id="c-body"></div>
     <div class="pfoot"><button class="pill" id="c-no"></button><button class="pill warn" id="c-yes"></button></div>
+  </div></div>
+
+  <div class="ov dlg" id="d-coop"><div class="panel md">
+    <div class="phead"><h2 id="co-title"></h2><div class="acts"><button class="xbtn" id="co-x">✕</button></div></div>
+    <div class="pbody center" id="co-body"></div>
+    <div class="pfoot"><button class="pill" id="co-close"></button><button class="pill go" id="co-sim"></button></div>
   </div></div>
 
   <div class="ov dlg" id="d-parent"><div class="panel md">

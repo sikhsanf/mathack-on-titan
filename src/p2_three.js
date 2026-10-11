@@ -221,6 +221,22 @@ function buildHome(){
   return {g,clouds};
 }
 
+/* ---------- landing: endless run with a scrolling meadow ---------- */
+function buildChase(){
+  const g=new THREE.Group(),R=mulberry(321),L=64,sc=[];
+  bx(g,300,2,34,'#62b24a',0,-1,0);bx(g,300,1.4,34,'#7d5430',0,-2.7,0);bx(g,300,.05,3.8,'#e6d29a',0,.03,.6);
+  const add=(o,x,k)=>{g.add(o);sc.push({o,x0:x,k:k||1});return o;};
+  for(let i=0;i<10;i++){const s=new THREE.Group();bx(s,3.2,.03,34,'#6fbd55',0,.012,0);add(s,i*6.4);}
+  const tree=(x,z,s)=>{const t=new THREE.Group();bx(t,.8*s,2.6*s,.8*s,'#7d5430',0,1.3*s,0);bx(t,2.8*s,1.7*s,2.8*s,'#3f9a52',0,3.2*s,0);bx(t,1.9*s,1.4*s,1.9*s,'#58b469',0,4.4*s,0);t.position.z=z;add(t,x);};
+  for(let i=0;i<12;i++)tree(i*5.3+R()*2,-4.5-R()*5,.9+R()*.7);
+  const FC=['#ff5d8f','#ffd84a','#ffffff','#a07bff','#ff9a2a','#46a6ff'];
+  for(let i=0;i<46;i++){const f=new THREE.Group(),hh=.3+R()*.4;bx(f,.07,hh,.07,'#3aa04a',0,hh/2,0);bx(f,.26,.26,.26,pick(FC),0,hh+.1,0);f.position.z=R()<.5?-1.6-R()*2.4:2.8+R()*3.6;add(f,R()*L);}
+  for(let i=0;i<8;i++){const r=new THREE.Group();bx(r,.9,.6,.8,'#a9a4b8',0,.3,0);bx(r,.5,.4,.5,'#bdb8cc',.2,.7,.1);r.position.z=3.6+R()*3;add(r,R()*L);}
+  for(let i=0;i<7;i++){const cg=new THREE.Group();for(let k=0;k<4;k++)bx(cg,2.2+R()*2,1+R()*.8,1.6,'#fff',k*1.8-3,R()*.6,R()*.8);cg.position.set(0,8+R()*4,-16-R()*6);add(cg,i*9.2,.12);}
+  for(let i=0;i<10;i++){const w=rnd(14,26),h=rnd(4,8);const hl=new THREE.Group();bx(hl,w,h,10,shade('#62b24a',-.05-R()*.08),0,h/2-1,0);hl.position.z=-26-R()*6;add(hl,i*6.4,.03);}
+  return {g,sc,L,off:0};
+}
+
 /* ---------- world map (3D diorama with a winding path) ---------- */
 function buildMapWorld(pos,openFlags,doneFlags){
   const g=new THREE.Group(),R=mulberry(4242),clouds=[];
