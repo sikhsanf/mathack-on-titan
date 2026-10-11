@@ -683,7 +683,7 @@ function frame(now){
   LANG=DB.lang||((navigator.language||'id').toLowerCase().startsWith('id')?'id':'en');
   AU.muted=!!DB.muted;
   initScenes();engInit();applyLang();$('#b-mute').textContent=AU.muted?'🔇':'🔊';$('#b-mute2').textContent=AU.muted?'🔇':'🔊';
-  $('#ver').textContent='prototype v0.9';
+  $('#ver').textContent='prototype v0.9.1';
   addEventListener('resize',()=>{if($('#s-map').classList.contains('show'))openMap();});
   if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
   goTitle();

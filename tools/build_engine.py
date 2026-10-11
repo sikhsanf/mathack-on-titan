@@ -48,12 +48,12 @@ LOCFIX = r"""
 const EN_PRAK_INSTR = {
 1:"Count all the blocks that match the color you are asked for, then type the total.",
 2:"Count the pictures, then type the matching number (1 or 2).",
-3:"Count the pictures, then type the number (let's learn the number 3).",
+3:"Count the pictures, then type the number.",
 4:"Draw a line from each bunny to a carrot, then tap YES (same amount) or NO.",
 5:"Draw a line from each bunny to a carrot, then tap YES (same amount) or NO.",
 6:"Count the animals in each box (they are scattered, not in a row), then type the number.",
-7:"Count the pictures, then type the number (let's learn the number 4).",
-8:"Count the pictures, then type the number (let's learn the number 5).",
+7:"Count the pictures, then type the number.",
+8:"Count the pictures, then type the number.",
 9:"Count the fruit in each box, then type the number.",
 10:"Take a quick look (don't count one by one) and type the number right away!",
 11:"Is this block the color you were asked for? Tap YES or NO.",
@@ -99,7 +99,10 @@ function localizeItem(hal,item){
 }
 function localizeHal(hal){
   const lang = (state.activeProfile && state.activeProfile.lang) || 'id';
-  if(lang !== 'en') return hal;
+  if(lang !== 'en'){
+    if(hal.level === 'prak'){ var strip=function(s){ return typeof s==='string' ? s.replace(/\s*\(fokus mengenal angka \d+\)/i,'') : s; }; return Object.assign({}, hal, {instruksi: strip(hal.instruksi), instruksiLayar: strip(hal.instruksiLayar)}); }
+    return hal;
+  }
   if(hal.level === 'k'){
     const override = EN_HALAMAN_OVERRIDES[hal.no];
     if(override) return Object.assign({}, hal, override);
