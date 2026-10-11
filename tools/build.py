@@ -8,7 +8,7 @@ head=('<meta charset="utf-8"><meta name="viewport" content="width=device-width,i
  '<title>Mathack on Titan</title><meta name="theme-color" content="#bfe8ff">'
  '<link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">'
  '<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mathack"><meta name="apple-mobile-web-app-status-bar-style" content="default">')
-html='<!doctype html><html lang="id"><head>'+head+open(ez+'fonts.html').read()+'<style>'+open(ez+'ezui.css').read()+'\n'+rd('game.css')+'</style></head><body>'+rd('body.html')+'<script>'+three+'</script><script>'+open(ez+'ezui.js').read()+'</script><script>'+js+'</script></body></html>'
+html='<!doctype html><html lang="id"><head>'+head+open(ez+'fonts.html').read()+'<style>'+open(ez+'ezui.css').read()+'\n'+rd('game.css')+'</style></head><body>'+rd('body.html')+'<script>'+three+'</script><script>'+open(S+'peerjs.min.js',encoding='utf8').read()+'</script><script>'+open(ez+'ezui.js').read()+'</script><script>'+js+'</script></body></html>'
 D=R+'dist/';shutil.rmtree(D,ignore_errors=True);os.makedirs(D)
 open(D+'index.html','w',encoding='utf8').write(html)
 for f in os.listdir(R+'pwa'):shutil.copy(R+'pwa/'+f,D+f)

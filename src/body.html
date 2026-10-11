@@ -5,6 +5,7 @@
     <div class="logo"><div class="logo-a">Mathack</div><div class="logo-b">on Titan</div></div>
     <div class="tag" id="t-tag"></div>
     <button class="pill go big" id="b-play"></button>
+    <div class="topl"><button class="chip wide" id="b-parent"></button></div>
     <div class="topr"><button class="chip" id="b-lang">ID</button><button class="chip" id="b-mute">🔊</button></div>
     <div class="ver" id="ver"></div>
   </section>
@@ -32,6 +33,17 @@
     <div class="pbody" id="st-body"></div>
     <div class="pfoot"><div class="fg"><button class="pill" id="st-back"></button></div><button class="pill go" id="st-ok"></button></div>
   </div></div>
+
+  <section class="ov scr" id="s-parent">
+    <div class="topl"><button class="chip" id="pc-leave">←</button><span class="badge" id="pc-name"></span></div>
+    <div class="pcpanel" id="pc-panel">
+      <div class="pc-status" id="pc-status"></div>
+      <div class="pc-hud"><span id="pc-hearts"></span><div class="hp" id="pc-hp"></div></div>
+      <div class="pc-perks" id="pc-perks"></div>
+      <div class="pc-cheer" id="pc-cheer"></div>
+      <div class="pc-note" id="pc-note"></div>
+    </div>
+  </section>
 
   <section class="ov scr" id="s-map">
     <div class="mapbg"></div>
@@ -80,7 +92,13 @@
   <div class="ov dlg" id="d-coop"><div class="panel md">
     <div class="phead"><h2 id="co-title"></h2><div class="acts"><button class="xbtn" id="co-x">✕</button></div></div>
     <div class="pbody center" id="co-body"></div>
-    <div class="pfoot"><button class="pill" id="co-close"></button><button class="pill go" id="co-sim"></button></div>
+    <div class="pfoot"><button class="pill" id="co-close"></button><button class="pill go" id="co-sim" style="display:none"></button></div>
+  </div></div>
+
+  <div class="ov dlg" id="d-join"><div class="panel md">
+    <div class="phead"><h2 id="jn-title"></h2><div class="acts"><button class="xbtn" id="jn-x">✕</button></div></div>
+    <div class="pbody" id="jn-body"></div>
+    <div class="pfoot"><button class="pill" id="jn-cancel"></button><button class="pill go" id="jn-ok"></button></div>
   </div></div>
 
   <div class="ov dlg" id="d-parent"><div class="panel md">
