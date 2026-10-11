@@ -707,9 +707,9 @@ function fxTick(dt){
 function updateFollowers(dt){
   const k=1-Math.exp(-dt*3.2);
   G.titans.filter(T=>T.follow).forEach((T,i)=>{
-    const R=T.root,tx=G.hx-3.1-i*1.7,tz=i%2?-.5:.9;
+    const R=T.root,tx=G.hx+1.6+i*1.5,tz=i%2?-1.4:-.2;
     R.position.x+=(tx-R.position.x)*k;R.position.z+=(tz-R.position.z)*k;R.position.y=0;
-    R.rotation.y=Math.PI/2;R.scale.setScalar(R.scale.x+(.5-R.scale.x)*k);
+    R.rotation.y=Math.PI/2;R.scale.setScalar(R.scale.x+(.7-R.scale.x)*k);
     if(G.cheer>0&&G.mode!=='duel')T.happy=1;else if(G.mode!=='duel')T.happy=0;
   });
 }

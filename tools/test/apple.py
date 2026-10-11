@@ -24,7 +24,7 @@ with sync_playwright() as p:
         except Exception: pass
     pg.wait_for_timeout(600);pg.screenshot(path='shots/ap_win.png')
     pg.wait_for_function("__G.mode==='play'",polling=200,timeout=30000)
-    pg.evaluate('__G.hx=58;__G.go=true');pg.wait_for_timeout(2500);pg.screenshot(path='shots/ap_follow.png')
+    pg.evaluate('__G.hx=40;__G.go=false');pg.wait_for_timeout(5000);pg.screenshot(path='shots/ap_follow.png')
     print(pg.evaluate("[__G.slot.prog.friends,__G.titans.filter(t=>t.follow).length]"))
     pg.evaluate("document.querySelector('#duelPanel').classList.remove('show','walk');goHome()");pg.wait_for_timeout(1500);pg.screenshot(path='shots/ap_home.png')
     pg.evaluate("__G.slot.prog.friends.push('jelly','bee','matahari','madu','shroom','bunny','raja');goHome()");pg.wait_for_timeout(1500);pg.screenshot(path='shots/ap_home2.png')
