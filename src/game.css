@@ -161,7 +161,7 @@ input.txt{font:700 18px var(--f-body);padding:10px 14px;border-radius:14px;borde
 /* the question panel is a book */
 #duelPanel{box-shadow:inset 16px 0 22px -12px rgba(43,35,80,.28),0 -3px 0 rgba(255,255,255,.5)!important;overflow:hidden}
 #duelPanel::after{content:"⭐";position:absolute;inset:0;z-index:5;pointer-events:none;display:grid;place-items:center;font-size:72px;background:linear-gradient(110deg,#2a6fd0 0%,#46a6ff 60%,#2a6fd0 100%);box-shadow:inset 0 0 0 6px #ffd84a,inset 18px 0 24px -8px rgba(0,0,0,.35);transform-origin:left center;transform:perspective(1100px) rotateY(0);opacity:0}
-#duelPanel.show::after{animation:coveropen .85s cubic-bezier(.5,0,.2,1) .35s both}
+#duelPanel.flip::after{animation:coveropen .85s cubic-bezier(.5,0,.2,1) .35s both}
 @keyframes coveropen{0%{opacity:1;transform:perspective(1100px) rotateY(0)}70%{opacity:1}100%{opacity:0;transform:perspective(1100px) rotateY(-112deg)}}
 #duelPanel.show{animation:sheetup .5s cubic-bezier(.2,1,.3,1)}
 @keyframes sheetup{from{transform:translateY(105%)}to{transform:none}}
@@ -194,3 +194,26 @@ input.txt{font:700 18px var(--f-body);padding:10px 14px;border-radius:14px;borde
 .node .st svg{width:clamp(20px,5.4vmin,26px);height:auto;filter:drop-shadow(0 2px 0 rgba(43,35,80,.4))}
 .node .st .on path{fill:#ffc21a;stroke:#fff7c8;stroke-width:1.6;stroke-linejoin:round}
 .node .st .off path{fill:#6f7aa8;fill-opacity:.55;stroke:#fff;stroke-opacity:.5;stroke-width:1.4;stroke-linejoin:round}
+
+/* walk pad: the paper panel stays on screen while walking */
+#s-play .jump,#p-jump{display:none!important}
+#duelPanel{transition:height .45s cubic-bezier(.3,.8,.2,1),width .45s cubic-bezier(.3,.8,.2,1)}
+#duelPanel.walk iframe{display:none}
+#duelPanel:not(.walk) #walkPad{display:none}
+#duelPanel.walk{height:30%}
+@media (orientation:landscape){#duelPanel.walk{height:auto;width:34%}}
+#walkPad{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:12px 18px calc(12px + env(safe-area-inset-bottom))}
+.wtip{font:400 clamp(20px,5.2vw,28px)/1.15 'Patrick Hand','Baloo 2',cursive;color:#2b2350;text-align:center;min-height:1.2em}
+.wrow{display:flex;gap:16px;width:100%;max-width:420px;justify-content:center}
+.wbtn{flex:1;height:clamp(76px,13vh,110px);border:0;border-radius:26px;font:800 clamp(20px,5.6vw,28px) var(--f-display);color:#fff;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;box-shadow:0 7px 0 rgba(43,35,80,.35),0 12px 18px rgba(43,35,80,.18);transition:transform .08s,box-shadow .08s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.wbtn small{font-size:1.9em;line-height:1}
+.wbtn.walk{background:linear-gradient(#52d17a,#2fae5a)}
+.wbtn.walk.on{background:linear-gradient(#ff8a6b,#e5543b)}
+.wbtn.jmp{background:linear-gradient(#ffd45a,#f5a623);color:#5b3a00}
+.wbtn:active{transform:translateY(5px);box-shadow:0 2px 0 rgba(43,35,80,.35)}
+.wbtn.pulse{animation:wpulse 1.1s ease-in-out infinite}
+@keyframes wpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+/* win pop */
+.winpop{position:absolute;left:50%;top:30%;z-index:30;pointer-events:none;font:800 clamp(30px,9vmin,56px) var(--f-display);color:#ffe45a;-webkit-text-stroke:3px #2b2350;paint-order:stroke fill;text-shadow:0 5px 0 #2b2350;white-space:nowrap;transform:translate(-50%,0) scale(.2);opacity:0;animation:winpop 1.7s cubic-bezier(.2,1.4,.3,1) forwards}
+.winpop.sub{top:40%;font-size:clamp(22px,6vmin,38px);color:#fff;animation-delay:.25s}
+@keyframes winpop{0%{transform:translate(-50%,20px) scale(.2);opacity:0}25%{transform:translate(-50%,0) scale(1.15);opacity:1}40%{transform:translate(-50%,0) scale(1)}80%{transform:translate(-50%,-10px) scale(1);opacity:1}100%{transform:translate(-50%,-40px) scale(1);opacity:0}}
