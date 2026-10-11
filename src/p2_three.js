@@ -164,6 +164,8 @@ function buildWorld(st){
   const cx=L/2-10;
   bx(g,L+60,2,26,st.ground,cx,-1,0);bx(g,L+60,1.4,26,st.dirt,cx,-2.7,0);
   bx(g,L+60,.05,3.2,'#f0dc9a',cx,.03,.4);
+  // grass stripes (alternating tone) + path edge
+  for(let i=0;i*5<L+60;i++){if(i%2)bx(g,5,.03,26,shade(st.ground,.035),-30+i*5+2.5,.01,0);}
   // distant hills
   for(let i=0;i<14;i++){const w=rnd(14,28),h=rnd(3,7);bx(g,w,h,10,shade(st.ground,-.04-R()*.08),-20+i*(L+60)/13,h/2-1,-24-R()*8);}
   // flowers
@@ -188,7 +190,9 @@ function buildWorld(st){
   const coins=[];
   const cm=(x,y)=>{const m=new THREE.Group();vb(m,.5,.5,.1,'#ffc21a',0,0,0,{emissive:'#a06a00'});vb(m,.3,.3,.12,'#ffe56a',0,0,0,{emissive:'#a08000'});m.position.set(x,y,0);g.add(m);coins.push({m,x,y,got:false});};
   st.titans.forEach((tt,i)=>{const x0=(i?st.titans[i-1].x:0)+8;for(let k=0;k<5;k++)cm(x0+k*1.6,1.0);const x1=x0+11;for(let k=0;k<5;k++)cm(x1+k*1.5,k%2?2.5:2.3);});
-  return {g,coins,clouds,len:st.len};
+  // floating pollen sparkles
+  const pol=[];for(let i=0;i<60;i++){const m=new THREE.Mesh(pgeo,pm(i%3?'#fff7b0':'#ffffff'));m.scale.setScalar(.11);m.position.set(-6+R()*(L+10),.6+R()*3.4,-3+R()*8);g.add(m);pol.push({m,x:m.position.x,y:m.position.y,ph:R()*6});}
+  return {g,coins,clouds,len:st.len,pol};
 }
 
 /* ---------- home (Markas) diorama ---------- */

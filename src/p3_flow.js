@@ -56,6 +56,12 @@ function pickQ(){
   return {level:lvl,no:q.no,idx:q.idx};
 }
 
+/* ---------- sky ---------- */
+const SKYC={};
+function skyTex(top,bot){const k=top+bot;if(SKYC[k])return SKYC[k];const c=document.createElement('canvas');c.width=4;c.height=256;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,0,256);g.addColorStop(0,top);g.addColorStop(.7,bot);g.addColorStop(1,bot);x.fillStyle=g;x.fillRect(0,0,4,256);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return SKYC[k]=t;}
+let SUN=null;
+function ensureSun(){if(SUN)return;SUN=new THREE.Group();[[14,'#fff7c2',.35],[9,'#ffe98a',.55],[5.5,'#ffd84a',1]].forEach(a=>{const m=new THREE.Mesh(new THREE.BoxGeometry(a[0],a[0],1),new THREE.MeshBasicMaterial({color:a[1],transparent:a[2]<1,opacity:a[2],fog:false,depthWrite:false}));SUN.add(m);});scene.add(SUN);}
+function fxFlash(cls){const e=$('#fx');e.className='';void e.offsetWidth;e.className=cls;}
 /* ---------- scene objects ---------- */
 function rebuildHero(look){
   if(G.hero){scene.remove(G.hero.root);disposeGroup(G.hero.root);}
@@ -74,7 +80,8 @@ function setVisible(mode){
   G.homeObj.g.visible=home;G.mascot.root.visible=home&&mode!=='edit';
   if(G.world)G.world.g.visible=play;G.titans.forEach(T=>{if(!T.gone)T.root.visible=play;});
   const showHero=home||play;G.hero.root.visible=showHero;if(G.petM)G.petM.root.visible=showHero;
-  scene.background=new THREE.Color(play&&G.world?STAGES[G.stageIdx].sky:'#bfe8ff');
+  ensureSun();SUN.visible=play&&!!G.world;
+  scene.background=play&&G.world?skyTex('#7fcbff',STAGES[G.stageIdx].fog):skyTex('#8fd0ff','#e6f7ff');
   scene.fog=play&&G.world?new THREE.Fog(STAGES[G.stageIdx].fog,45,130):new THREE.Fog('#d6f1ff',40,100);
 }
 function setMode(m){
@@ -216,7 +223,7 @@ $('#st-body').addEventListener('click',e=>{
 function stageOpen(i){return i===0||DB.slots[G.si]&&G.slot.prog.done.includes(STAGES[i-1].id);}
 function openMap(){
   setMode('map');showScreen('s-map');G.hero.root.visible=false;if(G.petM)G.petM.root.visible=false;
-  G.homeObj.g.visible=false;G.mascot.root.visible=false;scene.background=new THREE.Color('#bfe8ff');
+  G.homeObj.g.visible=false;G.mascot.root.visible=false;scene.background=skyTex('#8fd0ff','#e6f7ff');if(SUN)SUN.visible=false;
   AU.kind='home';renderMap();
 }
 function renderMap(){
@@ -276,6 +283,7 @@ function updatePlay(dt){
     if(Math.abs(G.hx-c.x)<.75&&Math.abs(G.hy+.9-c.y)<1.1){c.got=true;c.m.visible=false;G.slot.coins++;G.runCoins++;SFX.coin();burst(c.x,c.y,0,['#ffd84a','#fff3a0'],8,3,.5,6,.12);$('#p-coins').textContent='🪙 '+G.slot.coins;}
   });
   $('#p-fill').style.width=clamp(G.hx/st.len*100,0,100)+'%';
+  G.dustT=(G.dustT||0)-dt;if(G.walking&&G.onGround&&G.dustT<=0){G.dustT=.22;burst(G.hx-.3,.1,.1,['#f0dc9a','#fff3c8'],3,1.4,.5,-1,.14);}
   placeHero(dt,{moving:G.walking&&G.onGround,air:!G.onGround});
   {const pt=innerHeight>innerWidth;camTo(G.hx+(pt?3:4.5),3.4,11,G.hx+(pt?2.3:3.6),1.7,0,5);}
 }
@@ -289,6 +297,7 @@ function placeHero(dt,a){
 
 /* ---------- duel ---------- */
 function startDuel(){
+  fxFlash('zoom');
   const T=G.titans[G.tIdx];
   G.D={T,hp:T.q,max:T.q,hearts:3,state:'intro',recent:[],q:null,right:0,wrong:0,t:0};
   setMode('duel');showScreen('s-duel');VPW=1;
@@ -361,7 +370,7 @@ function updateDuel(dt){
   if(T.stomp>=0){
     T.stomp+=dt/1.0;
     if(T.stomp>=.5&&!D.stompHit){
-      D.stompHit=true;SFX.stomp();CAM.shake=.5;G.hurt=1;
+      D.stompHit=true;SFX.stomp();CAM.shake=.5;G.hurt=1;fxFlash('hurt');
       burst(G.hx+1,.2,0,['#c9a06a','#9a6b3f','#fff'],14,4,.6,12,.2);
       D.hearts--;renderDuelHud();
       if(D.hearts<=0){D.state='faint';G.faint=true;D.t=0;toast(t('faint'),2400);}
@@ -376,7 +385,7 @@ function updateDuel(dt){
   camTo.apply(null,D.cam.concat([6]));
 }
 function titanHit(){
-  const D=G.D,T=D.T;T.hit=1;T.flash=1;SFX.hit();CAM.shake=.35;
+  const D=G.D,T=D.T;T.hit=1;T.flash=1;SFX.hit();CAM.shake=.35;fxFlash('hit');
   const p=new THREE.Vector3();titanStarWorld(T,p);burst(p.x,p.y,p.z,['#ffe45a','#ff9a2a','#fff'],22,6,.7,10,.2);
   D.hp--;renderDuelHud();floatMsg(t('hit'));
   if(D.hp<=0){
@@ -502,9 +511,10 @@ function frame(now){
     else if(m==='result'){placeHero(dt,{moving:false});}
     else if(m==='title'||m==='slots'||m==='home'||m==='edit')updateIdle(dt);
     G.titans.forEach(T=>{if(T.dying&&T.defeat<1&&m!=='duel')T.defeat=Math.min(1,T.defeat+dt*.7);animTitan(T,dt,TT);});
-    if(G.world)G.world.clouds.forEach(c=>{c.g.position.x=c.x0+Math.sin(TT*c.sp)*3;});
+    if(G.world){G.world.clouds.forEach(c=>{c.g.position.x=c.x0+Math.sin(TT*c.sp)*3;});G.world.pol.forEach(o=>{o.m.position.y=o.y+Math.sin(TT*1.3+o.ph)*.35;o.m.position.x=o.x+Math.sin(TT*.7+o.ph)*.5;});}
     partTick(dt);
   }
+  if(SUN&&SUN.visible){SUN.position.set(CAM.p.x+30,34,-90);}
   // camera
   const k=1-Math.exp(-CAM.k*dt);CAM.p.lerp(CAM.tp,k);CAM.l.lerp(CAM.tl,k);
   CAM.shake=Math.max(0,CAM.shake-dt*1.5);
@@ -517,7 +527,7 @@ function frame(now){
   else if(m==='edit'&&port){const r=$('#d-style .panel').getBoundingClientRect();ref=1;vh=Math.round(clamp(r.top,H*.3,H));vy=H-vh;}
   VPW=vw/W;
   cam.aspect=vw/vh;cam.updateProjectionMatrix();
-  if(cam.aspect<ref){const f=Math.min(m==='play'?2.0:2.6,ref/cam.aspect);cam.position.sub(CAM.l).multiplyScalar(f).add(CAM.l);}
+  if(cam.aspect<ref){const f=Math.min(m==='play'?1.6:2.6,ref/cam.aspect);cam.position.sub(CAM.l).multiplyScalar(f).add(CAM.l);}
   cam.lookAt(CAM.l);
   renderer.setScissorTest(true);renderer.setViewport(0,vy,vw,vh);renderer.setScissor(0,vy,vw,vh);
   renderer.render(scene,cam);

@@ -39,10 +39,41 @@ html.embed body{background-attachment:scroll !important;}
 @media screen and (orientation:portrait) and (max-width:900px){ .embed #app{display:block !important;} }
 </style>
 """
+EMBED_CSS = EMBED_CSS.replace('</style>', open('/home/claude/mathack/src/engine_theme.css').read()+'</style>')
 t = t.replace('</head>', EMBED_CSS + '</head>', 1)
 
 # 4. bridge code, injected inside the app IIFE in place of the splash boot
 BRIDGE = r"""
+
+  /* 1-to-1 pairing widget for "Kelinci=3, Wortel=2" (the source app only printed this as text) */
+  var PAIR_EMO = {'kelinci':'🐰','wortel':'🥕'};
+  function mechGenChoice(hal, item, area){
+    var m = /^\s*([^=,]+?)\s*=\s*(\d+)\s*,\s*([^=,]+?)\s*=\s*(\d+)\s*$/.exec(item.prompt||'');
+    var A = m && PAIR_EMO[m[1].toLowerCase()], B = m && PAIR_EMO[m[3].toLowerCase()];
+    if(!m || item.visual || !A || !B) return mechGenChoice0(hal, item, area);
+    var na = +m[2], nb = +m[4], need = Math.min(na, nb), made = 0, sel = null;
+    var w = document.createElement('div'); w.className = 'pairw';
+    var r1 = document.createElement('div'), r2 = document.createElement('div'); r1.className = r2.className = 'prow';
+    var NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
+    function mk(emo, row, side){ var d = document.createElement('div'); d.className = 'pi'; d.textContent = emo; d.dataset.side = side; d.onclick = function(){ tap(d); }; row.appendChild(d); return d; }
+    for(var i=0;i<na;i++) mk(A, r1, 'a'); for(var j=0;j<nb;j++) mk(B, r2, 'b');
+    w.appendChild(svg); w.appendChild(r1); w.appendChild(r2);
+    var hint = document.createElement('div'); hint.className = 'pairhint'; hint.textContent = (state.activeProfile && state.activeProfile.lang === 'en') ? 'Tap a ' + A + ' then a ' + B + ' to pair them' : 'Sentuh ' + A + ' lalu ' + B + ' untuk memasangkan';
+    area.appendChild(w); area.appendChild(hint);
+    var holder = document.createElement('div'); holder.style.display = 'none'; area.appendChild(holder);
+    mechGenChoice0(hal, Object.assign({}, item, {prompt: ''}), holder);
+    function center(el){ var a = el.getBoundingClientRect(), b = w.getBoundingClientRect(); return [a.left - b.left + a.width/2, a.top - b.top + a.height/2]; }
+    function tap(d){
+      if(d.classList.contains('done')) return;
+      if(!sel || sel.dataset.side === d.dataset.side){ if(sel) sel.classList.remove('sel'); sel = d; d.classList.add('sel'); return; }
+      var x = sel, y = d; sel.classList.remove('sel'); sel = null;
+      x.classList.add('done'); y.classList.add('done');
+      var p = center(x), q = center(y), ln = document.createElementNS(NS, 'line');
+      ln.setAttribute('x1', p[0]); ln.setAttribute('y1', p[1]); ln.setAttribute('x2', q[0]); ln.setAttribute('y2', q[1]); svg.appendChild(ln);
+      made++;
+      if(made >= need){ hint.style.display = 'none'; holder.style.display = 'block'; }
+    }
+  }
 /* ===== Mathack bridge: run the app headless as a question engine ===== */
 (function(){
   document.documentElement.classList.add('embed');
@@ -51,6 +82,9 @@ BRIDGE = r"""
   try{ SoundFX.setMuted(true); }catch(e){}
   try{ applyStaticI18N(); }catch(e){}
   showScreen('screen-stage');
+  /* dashed outlines -> soft holes */
+  function holify(){ document.querySelectorAll('#stageArea *').forEach(function(el){ if(el.classList.contains('hole')||el.tagName==='svg'||el.closest('svg')) return; var cs=getComputedStyle(el); if(cs.borderTopStyle==='dashed'||cs.borderBottomStyle==='dashed'){ if(parseFloat(cs.borderBottomWidth)>=2 && cs.borderTopStyle==='dashed') el.classList.add('hole'); else el.style.borderBottomColor='var(--ink)'; } }); }
+  new MutationObserver(function(){ clearTimeout(holify.h); holify.h=setTimeout(holify,30); }).observe(document.body,{childList:true,subtree:true});
   function post(o){ try{ parent.postMessage(Object.assign({mx:'evt'}, o), '*'); }catch(e){} }
   // the app reports every answer through showFeedback(correct) -> forward it, no banners / next buttons
   showFeedback = function(correct, ctx){ post({type:'result', ok: !!correct}); };
@@ -83,6 +117,7 @@ BRIDGE = r"""
 })();
 """
 assert t.count('\nrunSplash();\n') == 1
+t = t.replace('function mechGenChoice(hal, item, area){','function mechGenChoice0(hal, item, area){',1)
 t = t.replace('\nrunSplash();\n', BRIDGE + '\n')
 
 open('src/engine.html', 'w', encoding='utf-8').write(t)

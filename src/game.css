@@ -132,3 +132,17 @@ input.txt{font:700 18px var(--f-body);padding:10px 14px;border-radius:14px;borde
  .tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}.tab{flex:none}
  #st-grid{min-height:130px}
 }
+
+#fx{position:absolute;inset:0;z-index:30;pointer-events:none;opacity:0}
+#fx.hit{animation:fxhit .35s ease-out}
+#fx.hurt{background:radial-gradient(ellipse at center,rgba(255,60,90,0) 45%,rgba(255,60,90,.55) 100%);animation:fxhurt .55s ease-out}
+#fx.zoom{background:radial-gradient(ellipse at center,rgba(255,255,255,0) 30%,rgba(43,35,80,.35) 100%);animation:fxhurt .9s ease-out}
+@keyframes fxhit{0%{opacity:.55;background:#fff}100%{opacity:0;background:#fff}}
+@keyframes fxhurt{0%{opacity:1}100%{opacity:0}}
+#duelPanel{background:linear-gradient(180deg,#fff3d6,#ffdfa6)!important}
+#duelPanel.show{animation:sheetin .38s cubic-bezier(.2,1.1,.3,1)}
+@keyframes sheetin{from{transform:translateY(60%);opacity:.2}to{transform:none;opacity:1}}
+@media (orientation:landscape){@keyframes sheetin{from{transform:translateX(40%);opacity:.2}to{transform:none;opacity:1}}}
+.logo{animation:logob 2.4s ease-in-out infinite}
+@keyframes logob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}}
+.logo-b{display:block}
