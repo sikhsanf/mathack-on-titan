@@ -139,10 +139,33 @@ input.txt{font:700 18px var(--f-body);padding:10px 14px;border-radius:14px;borde
 #fx.zoom{background:radial-gradient(ellipse at center,rgba(255,255,255,0) 30%,rgba(43,35,80,.35) 100%);animation:fxhurt .9s ease-out}
 @keyframes fxhit{0%{opacity:.55;background:#fff}100%{opacity:0;background:#fff}}
 @keyframes fxhurt{0%{opacity:1}100%{opacity:0}}
-#duelPanel{background:linear-gradient(180deg,#fff3d6,#ffdfa6)!important}
+#duelPanel{background:linear-gradient(180deg,#fff7e2,#ffe9bf)!important}
 #duelPanel.show{animation:sheetin .38s cubic-bezier(.2,1.1,.3,1)}
 @keyframes sheetin{from{transform:translateY(60%);opacity:.2}to{transform:none;opacity:1}}
 @media (orientation:landscape){@keyframes sheetin{from{transform:translateX(40%);opacity:.2}to{transform:none;opacity:1}}}
 .logo{animation:logob 2.4s ease-in-out infinite}
 @keyframes logob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}}
 .logo-b{display:block}
+
+/* map = 3D */
+.mapbg{display:none}
+#m-path{position:absolute;inset:0;width:auto;height:auto}
+.node{width:auto;min-width:96px;transform:translate(-50%,-100%)}
+.node .disc{width:clamp(42px,11vmin,60px);height:clamp(42px,11vmin,60px);font-size:clamp(20px,5vmin,28px)}
+/* style panel = bottom sheet for any portrait width */
+@media (orientation:portrait){
+ #d-style{align-items:flex-end;justify-content:stretch;padding:0}
+ #d-style .panel{--pw:100%;width:100%;max-width:none;height:56%;max-height:56%;border-radius:28px 28px 0 0;border-left:4px solid var(--ink);border-bottom:0}
+}
+.ccard img.th{width:62px;height:62px;display:block;margin:0 auto;pointer-events:none}
+/* the question panel is a book */
+#duelPanel{box-shadow:inset 16px 0 22px -12px rgba(43,35,80,.28),0 -3px 0 rgba(255,255,255,.5)!important;overflow:hidden}
+#duelPanel::after{content:"⭐";position:absolute;inset:0;z-index:5;pointer-events:none;display:grid;place-items:center;font-size:72px;background:linear-gradient(110deg,#2a6fd0 0%,#46a6ff 60%,#2a6fd0 100%);box-shadow:inset 0 0 0 6px #ffd84a,inset 18px 0 24px -8px rgba(0,0,0,.35);transform-origin:left center;transform:perspective(1100px) rotateY(0);opacity:0}
+#duelPanel.show::after{animation:coveropen .85s cubic-bezier(.5,0,.2,1) .35s both}
+@keyframes coveropen{0%{opacity:1;transform:perspective(1100px) rotateY(0)}70%{opacity:1}100%{opacity:0;transform:perspective(1100px) rotateY(-112deg)}}
+#duelPanel.show{animation:sheetup .5s cubic-bezier(.2,1,.3,1)}
+@keyframes sheetup{from{transform:translateY(105%)}to{transform:none}}
+@media (orientation:landscape){@keyframes sheetup{from{transform:translateX(105%)}to{transform:none}}}
+#duelPanel iframe{transform-origin:left center}
+#duelPanel iframe.turn{animation:pageturn .5s cubic-bezier(.3,.7,.2,1)}
+@keyframes pageturn{0%{transform:perspective(1000px) rotateY(-78deg);opacity:0}100%{transform:perspective(1000px) rotateY(0);opacity:1}}

@@ -79,7 +79,8 @@ function setVisible(mode){
   const play=mode==='play'||mode==='duel'||mode==='result';
   G.homeObj.g.visible=home;G.mascot.root.visible=home&&mode!=='edit';
   if(G.world)G.world.g.visible=play;G.titans.forEach(T=>{if(!T.gone)T.root.visible=play;});
-  const showHero=home||play;G.hero.root.visible=showHero;if(G.petM)G.petM.root.visible=showHero;
+  if(G.mapObj)G.mapObj.g.visible=mode==='map';
+  const showHero=home||play||mode==='map';G.hero.root.visible=showHero;if(G.petM)G.petM.root.visible=showHero;
   ensureSun();SUN.visible=play&&!!G.world;
   scene.background=play&&G.world?skyTex('#7fcbff',STAGES[G.stageIdx].fog):skyTex('#8fd0ff','#e6f7ff');
   scene.fog=play&&G.world?new THREE.Fog(STAGES[G.stageIdx].fog,45,130):new THREE.Fog('#d6f1ff',40,100);
@@ -137,6 +138,29 @@ function goHome(){
   refreshHomeHud();heroHome();homeCam();
 }
 
+/* ---------- thumbnails (offscreen render of hair / hats / outfits / pets) ---------- */
+let TR=null,TS=null,TCAM=null;const THC={};
+function thumbInit(){
+  try{TR=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});}catch(e){TR=false;return;}
+  TR.setPixelRatio(1);TR.setSize(112,112);TR.outputEncoding=THREE.sRGBEncoding;TS=new THREE.Scene();
+  TS.add(new THREE.HemisphereLight(0xffffff,0xb0c8a0,1.0));const d=new THREE.DirectionalLight(0xffffff,.7);d.position.set(-3,6,8);TS.add(d);
+  TCAM=new THREE.PerspectiveCamera(30,1,.1,60);
+}
+function thumb(kind,id,look){
+  const L=Object.assign({},look);
+  let key=kind+id;
+  if(kind==='hs'){L.hs=id;L.hat=0;key+='|'+L.hair+'|'+L.skin;}
+  else if(kind==='hat'){L.hat=id;key+='|'+L.hair+'|'+L.skin+'|'+L.hs;}
+  else if(kind==='outfit'){L.outfit=id;L.hat=0;key+='|'+L.skin+'|'+L.g;}
+  if(THC[key])return THC[key];
+  if(TR===null)thumbInit();if(!TR)return '';
+  let obj,cy,dist;
+  if(kind==='pet'){const P=petModel(id);obj=P.root;cy=.55;dist=4.6;}
+  else{const K=buildKid(L);obj=K.root;if(kind==='outfit'){cy=.95;dist=6.2;}else{cy=1.5;dist=4.5;}K.root.traverse(o=>{});}
+  TS.add(obj);TCAM.position.set(0,cy+.15,dist);TCAM.lookAt(0,cy,0);
+  TR.render(TS,TCAM);const url=TR.domElement.toDataURL('image/png');TS.remove(obj);
+  return THC[key]=url;
+}
 /* ---------- style editor / creator ---------- */
 function slotRef(){return G.edit.isNew?G.edit.tmp:G.slot;}
 function openStyleUI(){
@@ -184,12 +208,13 @@ function renderStyle(keepScroll){
 function gridHTML(){
   const ed=G.edit,S=slotRef(),L=ed.look;let h='';
   const card=(kind,id,inner,own,price,on)=>'<div class="ccard'+(on?' on':'')+(own?'':' lock')+'" data-k="'+kind+'" data-id="'+id+'">'+inner+(own?'':'<span class="pr">🪙'+price+'</span>')+'</div>';
-  if(ed.tab==='hair')for(let i=0;i<HAIR_STYLES;i++)h+=card('hs',i,'<span class="e">💇</span><span>'+(i+1)+'</span>',true,0,L.hs===i);
+  const im=(k,i)=>'<img class="th" alt="" src="'+thumb(k,i,L)+'">';
+  if(ed.tab==='hair')for(let i=0;i<HAIR_STYLES;i++)h+=card('hs',i,im('hs',i),true,0,L.hs===i);
   else if(ed.tab==='hairc')for(let i=0;i<HAIR_COLORS;i++)h+=card('hair',i,'<div class="sw" style="background:'+HAIR[i]+'"></div>',true,0,L.hair===i);
   else if(ed.tab==='skin')for(let i=0;i<SKINS;i++)h+=card('skin',i,'<div class="sw" style="background:'+SKIN[i]+'"></div>',true,0,L.skin===i);
-  else if(ed.tab==='shirt')OUTFITS.forEach((o,i)=>{h+=card('outfit',i,'<div class="sw" style="background:linear-gradient(90deg,'+o.c+' 55%,'+(o.c2||o.pants)+' 55%)"></div><span>'+nameOf('out',i)+'</span>',S.own.outfit.includes(i),o.price,L.outfit===i);});
-  else if(ed.tab==='hat')HATLIST.forEach(i=>{h+=card('hat',i,'<span class="e">'+(i?HG_ICON[i]:'🚫')+'</span><span>'+(i?nameOf('hat',i):t('none'))+'</span>',S.own.hat.includes(i),HAT_PRICE[i],L.hat===i);});
-  else if(ed.tab==='pet')for(let i=0;i<10;i++)h+=card('pet',i,'<span class="e">'+(i?PET_ICON[i]:'🚫')+'</span><span>'+(i?nameOf('pet',i):t('none'))+'</span>',S.own.pet.includes(i),PET_PRICE[i]+(i===5?0:0),L.pet===i);
+  else if(ed.tab==='shirt')OUTFITS.forEach((o,i)=>{h+=card('outfit',i,im('outfit',i)+'<span>'+nameOf('out',i)+'</span>',S.own.outfit.includes(i),o.price,L.outfit===i);});
+  else if(ed.tab==='hat')HATLIST.forEach(i=>{h+=card('hat',i,(i?im('hat',i):'<span class="e">🚫</span>')+'<span>'+(i?nameOf('hat',i):t('none'))+'</span>',S.own.hat.includes(i),HAT_PRICE[i],L.hat===i);});
+  else if(ed.tab==='pet')for(let i=0;i<10;i++)h+=card('pet',i,(i?im('pet',i):'<span class="e">🚫</span>')+'<span>'+(i?nameOf('pet',i):t('none'))+'</span>',S.own.pet.includes(i),PET_PRICE[i]+(i===5?0:0),L.pet===i);
   return h;
 }
 function equip(kind,id){
@@ -221,24 +246,38 @@ $('#st-body').addEventListener('click',e=>{
 
 /* ---------- map ---------- */
 function stageOpen(i){return i===0||DB.slots[G.si]&&G.slot.prog.done.includes(STAGES[i-1].id);}
+function mapPos(){return innerHeight>innerWidth?[[-3.4,0,7.5],[3.6,0,0],[-3,0,-7.5]]:[[-8,0,2.5],[0,0,-2.5],[8,0,2.5]];}
+function buildMapObj(){
+  if(G.mapObj){scene.remove(G.mapObj.g);disposeGroup(G.mapObj.g);G.mapObj=null;}
+  const pos=mapPos(),open=STAGES.map((_,i)=>stageOpen(i)),done=STAGES.map(st=>G.slot.prog.done.includes(st.id));
+  const M=buildMapWorld(pos,open,done);M.titans=[];
+  STAGES.forEach((st,i)=>{const boss=st.titans[st.titans.length-1];const T=buildTitan(Object.assign({},TITANS[boss.d],{s:.62}));T.root.position.set(pos[i][0]+(i===0?1.1:0),.6,pos[i][2]-.3);if(!open[i])addPadlock(T.root,0,3.2,1.2);T.root.children.forEach(()=>{});M.g.add(T.root);M.titans.push(T);if(done[i])T.happy=1;});
+  M.pos=pos;M.cur=Math.max(0,STAGES.findIndex((st,i)=>open[i]&&!done[i]));if(M.cur<0)M.cur=0;
+  scene.add(M.g);G.mapObj=M;
+}
 function openMap(){
-  setMode('map');showScreen('s-map');G.hero.root.visible=false;if(G.petM)G.petM.root.visible=false;
-  G.homeObj.g.visible=false;G.mascot.root.visible=false;scene.background=skyTex('#8fd0ff','#e6f7ff');if(SUN)SUN.visible=false;
+  if(G.mapObj)G.mapObj.g.visible=false;
+  buildMapObj();setMode('map');showScreen('s-map');
+  const M=G.mapObj;rebuildHero(G.slot.look);G.hero.root.rotation.y=.2;G.hero.root.scale.setScalar(1.15);
+  const p=M.pos[M.cur];G.hero.root.position.set(p[0]+2.4,.6,p[2]+1.2);if(G.petM){G.petM.root.position.set(p[0]+3.9,.6,p[2]+1.8);G.petM.root.rotation.y=.4;}
   AU.kind='home';renderMap();
+  camTo(M.cx,innerHeight>innerWidth?14:12,M.cz+(innerHeight>innerWidth?12:11),M.cx,0,M.cz,3,true);
 }
 function renderMap(){
   $('#m-title').textContent='🌼 '+t('mapTitle');refreshHomeHud();
   const p=$('#m-path');p.innerHTML='';
-  const pos=innerHeight>innerWidth?[[28,80],[68,50],[30,20]]:[[16,62],[50,36],[84,62]];
   STAGES.forEach((st,i)=>{
     const open=stageOpen(i),done=G.slot.prog.done.includes(st.id),n=G.slot.prog.stars[st.id]||0;
     const d=document.createElement('div');d.className='node'+(open?'':' lock')+(done?' done':'');
-    d.style.left=pos[i][0]+'%';d.style.top=pos[i][1]+'%';
     d.innerHTML='<div class="disc">'+(open?(done?'✓':(i+1)):'🔒')+'</div><div class="lbl"></div><div class="st">'+[1,2,3].map(k=>k<=n?'⭐':'☆').join('')+'</div>';
     d.querySelector('.lbl').textContent=t(st.key);
     d.onclick=()=>{if(!open){toast(t('locked'));SFX.bad();return;}SFX.tap();startStage(i);};
     p.appendChild(d);
   });
+}
+function placeMapNodes(){
+  if(!G.mapObj)return;const W=innerWidth,H=innerHeight,v=new THREE.Vector3();
+  $$('#m-path .node').forEach((el,i)=>{const p=G.mapObj.pos[i];v.set(p[0],4.6,p[2]).project(cam);el.style.left=((v.x*.5+.5)*W)+'px';el.style.top=((-v.y*.5+.5)*H)+'px';});
 }
 
 /* ---------- stage / walking ---------- */
@@ -330,6 +369,7 @@ function nextQ(){
   if(!ENG.ready||!CAT){D.waitT=setTimeout(nextQ,300);return;}
   D.q=pickQ();D.state='ask';
   $('#duelPanel').classList.remove('lockq');
+  {const f=ENG.frame;f.classList.remove('turn');void f.offsetWidth;f.classList.add('turn');}
   engCmd({type:'ask',level:D.q.level,no:D.q.no,idx:D.q.idx});
 }
 function onAnswer(ok){
@@ -509,6 +549,7 @@ function frame(now){
     if(m==='play')updatePlay(dt);
     else if(m==='duel'&&G.D)updateDuel(dt);
     else if(m==='result'){placeHero(dt,{moving:false});}
+    else if(m==='map'&&G.mapObj){animKid(G.hero,{moving:false,wave:true,atk:-1,hurt:0,cheer:0,faint:false},dt,TT);if(G.petM)petAnim(G.petM,false,TT);G.mapObj.titans.forEach(T=>animTitan(T,dt,TT));G.mapObj.clouds.forEach(c=>{c.g.position.x=c.x0+Math.sin(TT*c.sp)*3;});}
     else if(m==='title'||m==='slots'||m==='home'||m==='edit')updateIdle(dt);
     G.titans.forEach(T=>{if(T.dying&&T.defeat<1&&m!=='duel')T.defeat=Math.min(1,T.defeat+dt*.7);animTitan(T,dt,TT);});
     if(G.world){G.world.clouds.forEach(c=>{c.g.position.x=c.x0+Math.sin(TT*c.sp)*3;});G.world.pol.forEach(o=>{o.m.position.y=o.y+Math.sin(TT*1.3+o.ph)*.35;o.m.position.x=o.x+Math.sin(TT*.7+o.ph)*.5;});}
@@ -520,17 +561,19 @@ function frame(now){
   CAM.shake=Math.max(0,CAM.shake-dt*1.5);
   cam.position.copy(CAM.p);if(CAM.shake>0){cam.position.x+=(Math.random()-.5)*CAM.shake;cam.position.y+=(Math.random()-.5)*CAM.shake;}
   cam.lookAt(CAM.l);
-  const W=innerWidth,H=innerHeight,port=H>W;let vx=0,vy=0,vw=W,vh=H,ref=1.6;
+  const W=innerWidth,H=innerHeight,port=H>W;let vx=0,vy=0,vw=W,vh=H,ref=m==='map'?1.3:1.6;
   if(m==='duel'&&G.D){const P=$('#duelPanel');ref=1;
-    if(P.classList.contains('show')){const r=P.getBoundingClientRect();if(port){vh=Math.round(clamp(r.top,H*.3,H));vy=H-vh;}else vw=Math.round(clamp(r.left,W*.3,W));}
+    if(P.classList.contains('show')){const r=P.getBoundingClientRect();if(port){vh=Math.round(clamp(r.top+30,H*.3,H));vy=H-vh;}else vw=Math.round(clamp(r.left+30,W*.3,W));}
     else if(port){vh=Math.round(H*.48);vy=H-vh;}else vw=Math.round(W*.48);}
-  else if(m==='edit'&&port){const r=$('#d-style .panel').getBoundingClientRect();ref=1;vh=Math.round(clamp(r.top,H*.3,H));vy=H-vh;}
+  else if(m==='edit'&&port){const r=$('#d-style .panel').getBoundingClientRect();ref=1;vh=Math.round(clamp(r.top+30,H*.3,H));vy=H-vh;}
   VPW=vw/W;
   cam.aspect=vw/vh;cam.updateProjectionMatrix();
-  if(cam.aspect<ref){const f=Math.min(m==='play'?1.6:2.6,ref/cam.aspect);cam.position.sub(CAM.l).multiplyScalar(f).add(CAM.l);}
+  if(cam.aspect<ref){const f=Math.min(m==='play'?1.6:(m==='map'?2.4:2.6),ref/cam.aspect);cam.position.sub(CAM.l).multiplyScalar(f).add(CAM.l);}
   cam.lookAt(CAM.l);
+  if(vw<W||vh<H){renderer.setScissorTest(false);renderer.setViewport(0,0,W,H);renderer.setClearColor(0xe6f7ff,1);renderer.clear();}
   renderer.setScissorTest(true);renderer.setViewport(0,vy,vw,vh);renderer.setScissor(0,vy,vw,vh);
   renderer.render(scene,cam);
+  if(m==='map')placeMapNodes();
 }
 
 /* ---------- boot ---------- */
@@ -540,7 +583,7 @@ function frame(now){
   AU.muted=!!DB.muted;
   initScenes();engInit();applyLang();$('#b-mute').textContent=AU.muted?'🔇':'🔊';$('#b-mute2').textContent=AU.muted?'🔇':'🔊';
   $('#ver').textContent='prototype v0.2';
-  addEventListener('resize',()=>{if($('#s-map').classList.contains('show'))renderMap();});
+  addEventListener('resize',()=>{if($('#s-map').classList.contains('show'))openMap();});
   if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
   goTitle();
   requestAnimationFrame(frame);
