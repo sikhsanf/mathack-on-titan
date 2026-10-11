@@ -468,7 +468,7 @@ function stageClear(){
 
 /* ---------- pause ---------- */
 function doPause(){if(G.paused||(G.mode!=='play'&&G.mode!=='duel'))return;G.paused=true;EZUI.show('d-pause');SFX.tap();}
-$('#p-pause').onclick=doPause;$('#d-pause').addEventListener('click',()=>{});
+$('#p-pause').onclick=doPause;
 $('#pa-resume').onclick=()=>{G.paused=false;EZUI.hide('d-pause');if(G.mode==='duel'&&G.D&&G.D.state==='wait')nextQ();};
 $('#pa-quit').onclick=()=>{G.paused=false;EZUI.hide('d-pause');saveDB();if(G.D){G.D=null;$('#duelPanel').classList.remove('show','lockq');}VPW=1;clearWorld();openMap();};
 
@@ -532,7 +532,7 @@ $('#b-mute').onclick=$('#b-mute2').onclick=()=>{setMuted(!AU.muted);$('#b-mute2'
 $('#b-style').onclick=()=>{SFX.tap();const lk=Object.assign({},G.slot.look);G.edit={isNew:false,look:Object.assign({},lk),orig:lk,tab:'hair'};openStyleUI();};
 $('#b-go').onclick=()=>{SFX.tap();openMap();};
 $('#m-back').onclick=()=>{SFX.tap();clearWorld();rebuildHero(G.slot.look);goHome();};
-$('#d-pause').onclick=doPause;
+$('#d-pausebtn').onclick=doPause;
 
 /* ---------- main loop ---------- */
 function updateIdle(dt){
@@ -586,7 +586,7 @@ function frame(now){
   LANG=DB.lang||((navigator.language||'id').toLowerCase().startsWith('id')?'id':'en');
   AU.muted=!!DB.muted;
   initScenes();engInit();applyLang();$('#b-mute').textContent=AU.muted?'🔇':'🔊';$('#b-mute2').textContent=AU.muted?'🔇':'🔊';
-  $('#ver').textContent='prototype v0.6';
+  $('#ver').textContent='prototype v0.7';
   addEventListener('resize',()=>{if($('#s-map').classList.contains('show'))openMap();});
   if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
   goTitle();
